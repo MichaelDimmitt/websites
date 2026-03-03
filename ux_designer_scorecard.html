@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UX Designer Scorecard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #08090e;
+    --surface: #10121a;
+    --surface2: #181b27;
+    --surface3: #1e2133;
+    --border: #252836;
+    --border-accent: #2d3147;
+    --text: #e8eaf0;
+    --text-dim: #6b7194;
+    --text-muted: #3d4162;
+    --coral: #ff4d6a;
+    --coral-glow: rgba(255,77,106,0.12);
+    --orange: #ff8a4d;
+    --orange-glow: rgba(255,138,77,0.12);
+    --amber: #ffc645;
+    --amber-glow: rgba(255,198,69,0.12);
+    --green: #4ddb6a;
+    --green-glow: rgba(77,219,106,0.12);
+    --teal: #00e5c7;
+    --teal-glow: rgba(0,229,199,0.12);
+    --sky: #38bdf8;
+    --sky-glow: rgba(56,189,248,0.12);
+    --indigo: #818cf8;
+    --indigo-glow: rgba(129,140,248,0.12);
+    --purple: #a78bfa;
+    --purple-glow: rgba(167,139,250,0.12);
+    --pink: #f472b6;
+    --pink-glow: rgba(244,114,182,0.12);
+    --rose: #fb7185;
+    --rose-glow: rgba(251,113,133,0.12);
+    --sidebar-w: 380px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text);
+    min-height: 100vh; -webkit-font-smoothing: antialiased;
+  }
+  .grain {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none;
+    z-index: 9999; opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ── LAYOUT ── */
+  .shell {
+    display: flex; min-height: 100vh;
+  }
+  .main {
+    flex: 1; min-width: 0; padding: 44px 32px 80px;
+    max-width: 760px; margin: 0 auto;
+  }
+  .sidebar {
+    width: var(--sidebar-w); flex-shrink: 0;
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    border-left: 1px solid var(--border); background: var(--surface);
+    padding: 32px 24px;
+    scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-track { background: transparent; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Mobile: sidebar becomes bottom section */
+  .mobile-results { display: none; }
+  @media (max-width: 1060px) {
+    .shell { flex-direction: column; }
+    .sidebar { display: none; }
+    .mobile-results { display: block; margin-top: 48px; }
+    .main { max-width: 720px; padding: 36px 24px 40px; }
+  }
+
+  /* ── HEADER ── */
+  .header { text-align: center; margin-bottom: 44px; position: relative; }
+  .header::after {
+    content: ''; position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%);
+    width: 60px; height: 2px; background: linear-gradient(90deg, transparent, var(--coral), transparent);
+  }
+  .tag {
+    font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--coral); margin-bottom: 12px; display: inline-block;
+    padding: 4px 12px; border: 1px solid rgba(255,77,106,0.25); border-radius: 2px; background: var(--coral-glow);
+  }
+  h1 {
+    font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px, 6vw, 68px);
+    line-height: 0.92; letter-spacing: -1px; margin-bottom: 8px;
+  }
+  h1 span {
+    display: block; background: linear-gradient(135deg, var(--coral), var(--amber));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .subtitle { font-size: 13px; color: var(--text-dim); font-weight: 300; max-width: 480px; margin: 0 auto; line-height: 1.55; }
+
+  /* ── META ROW ── */
+  .meta-row {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    margin-bottom: 44px; flex-wrap: wrap;
+  }
+  .meta-label {
+    font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--text-muted);
+  }
+  .meta-input {
+    background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 8px 16px; border-radius: 4px;
+    width: 220px; outline: none; transition: border-color 0.3s;
+  }
+  .meta-input:focus { border-color: var(--coral); box-shadow: 0 0 0 3px var(--coral-glow); }
+  .meta-input::placeholder { color: var(--text-muted); }
+  .date-display { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-muted); letter-spacing: 1px; }
+
+  /* ── SECTIONS ── */
+  .section { margin-bottom: 44px; }
+  .section-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+    padding-bottom: 12px; border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: 'Bebas Neue', sans-serif; font-size: 24px; line-height: 1;
+    width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
+    border-radius: 7px; flex-shrink: 0;
+  }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 1px; line-height: 1; }
+  .section-subtitle { font-size: 12px; color: var(--text-dim); font-weight: 300; }
+
+  /* ── CAREER LADDER ── */
+  .ladder { display: flex; gap: 7px; flex-wrap: wrap; }
+  .ladder-btn {
+    background: var(--bg); border: 1px solid var(--border); color: var(--text-dim);
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+    padding: 10px 16px; border-radius: 6px; cursor: pointer; transition: all 0.25s;
+    display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 100px; text-align: center;
+  }
+  .ladder-btn:hover { border-color: var(--border-accent); background: var(--surface2); }
+  .ladder-btn.selected { border-color: var(--coral); background: var(--coral-glow); color: var(--text); }
+  .ladder-yrs { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-muted); }
+  .ladder-btn.selected .ladder-yrs { color: var(--coral); }
+
+  /* ── CARD GRID ── */
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 640px) { .card-grid { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 20px; position: relative; overflow: hidden; transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .card:hover { border-color: var(--border-accent); }
+  .card.rated { box-shadow: 0 0 18px var(--card-glow, var(--coral-glow)); }
+  .card-num {
+    position: absolute; top: 12px; right: 16px; font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px; color: var(--text-muted); opacity: 0.3; line-height: 1;
+  }
+  .card-icon {
+    width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center;
+    justify-content: center; font-size: 15px; margin-bottom: 10px; border: 1px solid;
+  }
+  .card-name { font-weight: 700; font-size: 14px; margin-bottom: 2px; letter-spacing: -0.2px; }
+  .card-desc { font-size: 11px; color: var(--text-dim); line-height: 1.45; margin-bottom: 14px; }
+
+  /* ── RATING DOTS ── */
+  .rating { display: flex; align-items: center; gap: 4px; }
+  .rating-label {
+    font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 0.8px;
+    text-transform: uppercase; color: var(--text-muted); width: 48px; flex-shrink: 0;
+  }
+  .rating-label.end { text-align: right; }
+  .dots { display: flex; gap: 5px; flex: 1; justify-content: center; }
+  .dot {
+    width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border);
+    cursor: pointer; transition: all 0.2s; position: relative; background: transparent;
+  }
+  .dot:hover { border-color: var(--dot-color, var(--coral)); transform: scale(1.12); }
+  .dot.filled {
+    background: var(--dot-color, var(--coral)); border-color: var(--dot-color, var(--coral));
+    box-shadow: 0 0 10px var(--dot-glow, var(--coral-glow));
+  }
+  .dot-num {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-muted);
+    pointer-events: none; transition: color 0.2s;
+  }
+  .dot.filled .dot-num { color: var(--bg); font-weight: 700; }
+  .score-val {
+    font-family: 'Bebas Neue', sans-serif; font-size: 22px; margin-left: 4px;
+    min-width: 18px; text-align: center; line-height: 1; opacity: 0; transition: opacity 0.3s;
+  }
+  .score-val.visible { opacity: 1; }
+
+  /* ── CHECKLIST ── */
+  .checklist { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 560px) { .checklist { grid-template-columns: 1fr; } }
+  .check-item {
+    display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+    cursor: pointer; transition: all 0.25s; user-select: none;
+  }
+  .check-item:hover { border-color: var(--border-accent); }
+  .check-item.checked { border-color: var(--check-color, var(--teal)); background: var(--check-glow, var(--teal-glow)); }
+  .checkbox {
+    width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--border);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; margin-top: 1px;
+  }
+  .check-item.checked .checkbox { background: var(--check-color, var(--teal)); border-color: var(--check-color, var(--teal)); }
+  .checkmark { opacity: 0; transition: opacity 0.2s; color: var(--bg); font-size: 12px; font-weight: 700; }
+  .check-item.checked .checkmark { opacity: 1; }
+  .check-text { flex: 1; }
+  .check-title { font-weight: 600; font-size: 12px; margin-bottom: 2px; }
+  .check-sub { font-size: 10.5px; color: var(--text-dim); line-height: 1.4; }
+  .check-item.checked .check-title { color: var(--check-color, var(--teal)); }
+
+  /* ── STATUS BUTTONS ── */
+  .status-row { display: flex; gap: 5px; margin-top: 7px; flex-wrap: wrap; }
+  .status-btn {
+    font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 0.5px;
+    text-transform: uppercase; padding: 3px 8px; border-radius: 3px; cursor: pointer;
+    border: 1px solid var(--border); background: transparent; color: var(--text-muted); transition: all 0.2s;
+  }
+  .status-btn:hover { border-color: var(--border-accent); }
+  .status-btn.active { border-color: var(--stat-color); color: var(--stat-color); background: var(--stat-glow); }
+
+  /* ═══════════════════════════════════════
+     SIDEBAR / RESULTS PANEL STYLES
+     ═══════════════════════════════════════ */
+  .results-panel {}
+  .rp-tag {
+    font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--text-muted); margin-bottom: 20px; text-align: center;
+  }
+  .rp-gradient-bar {
+    height: 2px; margin-bottom: 24px; border-radius: 1px;
+    background: linear-gradient(90deg, var(--coral), var(--amber), var(--teal), var(--purple), var(--pink));
+  }
+
+  /* Progress ring */
+  .progress-ring-wrap { text-align: center; margin-bottom: 24px; }
+  .progress-ring-label {
+    font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--text-muted); margin-top: 8px;
+  }
+
+  /* Career badge */
+  .rp-career {
+    text-align: center; margin-bottom: 20px; padding: 10px;
+    border: 1px solid var(--border); border-radius: 6px; background: var(--surface2);
+  }
+  .rp-career-label {
+    font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;
+  }
+  .rp-career-value { font-weight: 700; font-size: 14px; color: var(--coral); }
+
+  /* Archetype */
+  .rp-archetype { text-align: center; margin-bottom: 20px; }
+  .rp-arch-name {
+    font-family: 'Bebas Neue', sans-serif; font-size: 32px; line-height: 1; margin-bottom: 4px;
+  }
+  .rp-arch-desc { font-size: 11px; color: var(--text-dim); line-height: 1.5; }
+  .rp-arch-placeholder { color: var(--text-muted); font-size: 13px; text-align: center; padding: 12px 0; }
+
+  /* Section breakdown */
+  .rp-section-title {
+    font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--text-muted); margin: 20px 0 10px; padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .rp-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .rp-bar-label { font-size: 10px; color: var(--text-dim); width: 100px; flex-shrink: 0; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rp-bar-track { flex: 1; height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .rp-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+  .rp-bar-val { font-family: 'Space Mono', monospace; font-size: 9px; width: 16px; color: var(--text-dim); text-align: right; }
+
+  /* Stats mini */
+  .rp-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+  .rp-stat {
+    text-align: center; padding: 10px 6px; border: 1px solid var(--border);
+    border-radius: 6px; background: var(--surface2);
+  }
+  .rp-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 24px; line-height: 1; }
+  .rp-stat-max { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-muted); }
+  .rp-stat-label { font-family: 'Space Mono', monospace; font-size: 7px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-top: 2px; }
+
+  /* Asset summary */
+  .rp-asset-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+  .rp-asset-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .rp-asset-name { font-size: 10px; color: var(--text-dim); flex: 1; }
+  .rp-asset-status { font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+
+  /* Radar (sidebar) */
+  .rp-radar { display: flex; justify-content: center; margin: 12px 0; }
+
+  /* Growth */
+  .rp-growth-item {
+    padding: 8px 10px; border-radius: 5px; border: 1px solid var(--border);
+    background: var(--surface2); margin-bottom: 6px;
+  }
+  .rp-growth-name { font-weight: 600; font-size: 11px; }
+  .rp-growth-score { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-muted); }
+
+  /* Archetype legend small */
+  .rp-arch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .rp-arch-card {
+    padding: 8px 10px; border-radius: 5px; border: 1px solid var(--border); background: var(--surface2); transition: all 0.3s;
+  }
+  .rp-arch-card.matched { border-color: var(--m-color); background: var(--m-glow); }
+  .rp-arch-card-name { font-weight: 700; font-size: 10px; margin-bottom: 1px; }
+  .rp-arch-card-focus { font-size: 9px; color: var(--text-dim); line-height: 1.3; }
+
+  /* Buttons */
+  .rp-btn-row { display: flex; gap: 8px; margin-top: 16px; }
+  .btn {
+    font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 1.5px;
+    text-transform: uppercase; padding: 8px 16px; border-radius: 4px; cursor: pointer;
+    transition: all 0.3s; flex: 1; text-align: center;
+  }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
+  .btn-ghost:hover { border-color: var(--coral); color: var(--coral); }
+  .btn-fill { background: var(--coral); border: 1px solid var(--coral); color: var(--bg); }
+  .btn-fill:hover { background: #ff3355; }
+
+  .footer {
+    text-align: center; padding-top: 24px; border-top: 1px solid var(--border); margin-top: 36px;
+  }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 2px; color: var(--text-muted); }
+  .footer-sub {
+    font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--text-muted); opacity: 0.5;
+  }
+
+  @media print {
+    body { background: #fff; color: #111; }
+    .grain { display: none; }
+    .shell { display: block; }
+    .sidebar { display: none; }
+    .mobile-results { display: block !important; }
+    .main { max-width: 100%; padding: 20px; }
+    .card, .check-item, .rp-stat, .rp-arch-card, .rp-growth-item { background: #fafafa; border-color: #ddd; break-inside: avoid; }
+    .dot.filled, .ladder-btn.selected, .status-btn.active, .check-item.checked { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    h1 { -webkit-text-fill-color: #111; background: none; }
+    h1 span { -webkit-text-fill-color: #c0392b; background: none; }
+    .btn { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div id="app"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useCallback, useMemo } = React;
+
+/* ── DATA ── */
+const CAREER_LEVELS = [
+  { id: 'student', label: 'Student / Intern', yrs: '0 yrs' },
+  { id: 'junior', label: 'Junior', yrs: '0–2 yrs' },
+  { id: 'mid', label: 'Mid-Level', yrs: '2–5 yrs' },
+  { id: 'senior', label: 'Senior', yrs: '5–8 yrs' },
+  { id: 'lead', label: 'Lead', yrs: '7–10 yrs' },
+  { id: 'principal', label: 'Principal / Staff', yrs: '10+ yrs' },
+  { id: 'manager', label: 'Manager / Director', yrs: '8+ yrs' },
+  { id: 'vp', label: 'VP / Head of Design', yrs: '12+ yrs' },
+];
+
+const COMPETENCIES = [
+  { id: 'research', name: 'User Research', desc: 'Interviews, usability testing, synthesis, insight generation', icon: '🔍', color: '#ff4d6a', glow: 'rgba(255,77,106,0.12)' },
+  { id: 'ia', name: 'Information Architecture', desc: 'Content structure, navigation, taxonomy, sitemaps', icon: '🏗', color: '#ff8a4d', glow: 'rgba(255,138,77,0.12)' },
+  { id: 'interaction', name: 'Interaction Design', desc: 'Flows, wireframes, prototyping, micro-interactions', icon: '⚡', color: '#ffc645', glow: 'rgba(255,198,69,0.12)' },
+  { id: 'visual', name: 'Visual Design', desc: 'Layout, typography, color, iconography, brand expression', icon: '🎨', color: '#4ddb6a', glow: 'rgba(77,219,106,0.12)' },
+  { id: 'systems', name: 'Design Systems', desc: 'Components, tokens, documentation, governance', icon: '🧱', color: '#00e5c7', glow: 'rgba(0,229,199,0.12)' },
+  { id: 'accessibility', name: 'Accessibility', desc: 'WCAG, assistive tech, inclusive patterns', icon: '♿', color: '#38bdf8', glow: 'rgba(56,189,248,0.12)' },
+  { id: 'strategy', name: 'Product Strategy', desc: 'Roadmapping, metrics, stakeholder alignment, OKRs', icon: '🧭', color: '#818cf8', glow: 'rgba(129,140,248,0.12)' },
+  { id: 'leadership', name: 'Design Leadership', desc: 'Mentoring, critique, team building, org influence', icon: '👑', color: '#a78bfa', glow: 'rgba(167,139,250,0.12)' },
+  { id: 'ops', name: 'Design Operations', desc: 'Process, tooling, team scaling, workflow management', icon: '⚙️', color: '#f472b6', glow: 'rgba(244,114,182,0.12)' },
+  { id: 'craft', name: 'Prototyping & Craft', desc: 'Hi-fi execution, motion, code awareness, tool mastery', icon: '✦', color: '#fb7185', glow: 'rgba(251,113,133,0.12)' },
+];
+
+const SOFT_SKILLS = [
+  { id: 'presentation', name: 'Presenting & Storytelling', desc: 'Pitching ideas, presenting to stakeholders', icon: '🎤', color: '#ff4d6a', glow: 'rgba(255,77,106,0.12)' },
+  { id: 'communication', name: 'Cross-Functional Comms', desc: 'Working with engineers, PMs, marketing, execs', icon: '💬', color: '#ffc645', glow: 'rgba(255,198,69,0.12)' },
+  { id: 'critique', name: 'Giving & Receiving Feedback', desc: 'Constructive critique, iterating on input', icon: '🔄', color: '#00e5c7', glow: 'rgba(0,229,199,0.12)' },
+  { id: 'facilitation', name: 'Workshop Facilitation', desc: 'Leading sprints, brainstorms, alignment sessions', icon: '🧩', color: '#818cf8', glow: 'rgba(129,140,248,0.12)' },
+  { id: 'negotiation', name: 'Pushback & Negotiation', desc: 'Advocating for users, defending decisions', icon: '🛡', color: '#a78bfa', glow: 'rgba(167,139,250,0.12)' },
+  { id: 'timemanagement', name: 'Time & Project Mgmt', desc: 'Scoping, deadlines, managing ambiguity', icon: '⏱', color: '#f472b6', glow: 'rgba(244,114,182,0.12)' },
+];
+
+const PROFESSIONAL_ASSETS = [
+  { id: 'resume', title: 'Resume / CV', sub: 'Tailored, current, keyword-optimized', color: '#ff4d6a', glow: 'rgba(255,77,106,0.08)' },
+  { id: 'portfolio_site', title: 'Portfolio Website', sub: 'Custom domain, case studies, contact', color: '#ff8a4d', glow: 'rgba(255,138,77,0.08)' },
+  { id: 'case_studies', title: 'Case Studies (3+)', sub: 'Process, decisions, and outcomes documented', color: '#ffc645', glow: 'rgba(255,198,69,0.08)' },
+  { id: 'linkedin', title: 'LinkedIn Profile', sub: 'Photo, headline, summary, experience', color: '#38bdf8', glow: 'rgba(56,189,248,0.08)' },
+  { id: 'dribbble', title: 'Dribbble', sub: 'Active shots showcasing visual craft', color: '#f472b6', glow: 'rgba(244,114,182,0.08)' },
+  { id: 'behance', title: 'Behance', sub: 'Full project presentations with context', color: '#818cf8', glow: 'rgba(129,140,248,0.08)' },
+  { id: 'figma_community', title: 'Figma Community', sub: 'Published files, templates, resources', color: '#a78bfa', glow: 'rgba(167,139,250,0.08)' },
+  { id: 'github', title: 'GitHub / CodePen', sub: 'Code contributions, prototypes', color: '#4ddb6a', glow: 'rgba(77,219,106,0.08)' },
+  { id: 'blog', title: 'Blog / Writing', sub: 'Design articles on Medium, Substack, etc.', color: '#00e5c7', glow: 'rgba(0,229,199,0.08)' },
+  { id: 'social', title: 'Design Social Presence', sub: 'X, Threads, or other design engagement', color: '#fb7185', glow: 'rgba(251,113,133,0.08)' },
+];
+
+const ASSET_STATUSES = [
+  { id: 'none', label: "Don't have", color: '#3d4162', glow: 'transparent' },
+  { id: 'outdated', label: 'Outdated', color: '#ff8a4d', glow: 'rgba(255,138,77,0.1)' },
+  { id: 'wip', label: 'In Progress', color: '#ffc645', glow: 'rgba(255,198,69,0.1)' },
+  { id: 'ready', label: 'Up to Date', color: '#4ddb6a', glow: 'rgba(77,219,106,0.1)' },
+];
+
+const EXPERIENCE_ITEMS = [
+  { id: 'solo_projects', title: 'Solo / Side Projects', sub: 'Personal projects showing initiative', color: '#ff4d6a', glow: 'rgba(255,77,106,0.08)' },
+  { id: 'client_work', title: 'Client / Agency Work', sub: 'Projects with external stakeholders', color: '#ff8a4d', glow: 'rgba(255,138,77,0.08)' },
+  { id: 'product_team', title: 'Product Team Experience', sub: 'In-house with cross-functional teams', color: '#ffc645', glow: 'rgba(255,198,69,0.08)' },
+  { id: 'enterprise', title: 'Enterprise / Complex Systems', sub: 'B2B, internal tools, healthcare, fintech', color: '#00e5c7', glow: 'rgba(0,229,199,0.08)' },
+  { id: 'consumer', title: 'Consumer / B2C Products', sub: 'Consumer apps, e-commerce, social', color: '#38bdf8', glow: 'rgba(56,189,248,0.08)' },
+  { id: 'zero_to_one', title: '0 → 1 Product Work', sub: 'Built from concept to launch', color: '#818cf8', glow: 'rgba(129,140,248,0.08)' },
+  { id: 'redesign', title: 'Major Redesign', sub: 'Led a significant product overhaul', color: '#a78bfa', glow: 'rgba(167,139,250,0.08)' },
+  { id: 'mentored', title: 'Mentored Others', sub: 'Guided juniors, interns, career switchers', color: '#f472b6', glow: 'rgba(244,114,182,0.08)' },
+  { id: 'speaking', title: 'Public Speaking / Teaching', sub: 'Talks, workshops, courses, conferences', color: '#4ddb6a', glow: 'rgba(77,219,106,0.08)' },
+  { id: 'open_source', title: 'Open Source / Community', sub: 'Tools, libraries, or community resources', color: '#fb7185', glow: 'rgba(251,113,133,0.08)' },
+];
+
+const ARCHETYPES = [
+  { name: 'The Researcher', color: '#ff4d6a', glow: 'rgba(255,77,106,0.08)', focus: 'Deep in discovery — insight & evidence', peaks: ['research', 'strategy', 'accessibility'] },
+  { name: 'The Craftsperson', color: '#ffc645', glow: 'rgba(255,198,69,0.08)', focus: 'Pixel-perfect polish, motion & detail', peaks: ['visual', 'craft', 'interaction'] },
+  { name: 'The Architect', color: '#00e5c7', glow: 'rgba(0,229,199,0.08)', focus: 'Systems thinker — scalable foundations', peaks: ['systems', 'ia', 'ops'] },
+  { name: 'The Strategist', color: '#818cf8', glow: 'rgba(129,140,248,0.08)', focus: 'Big-picture, design meets business', peaks: ['strategy', 'leadership', 'research'] },
+  { name: 'The Generalist', color: '#f472b6', glow: 'rgba(244,114,182,0.08)', focus: 'Adaptable, cross-functional, fills gaps', peaks: [] },
+  { name: 'The Champion', color: '#a78bfa', glow: 'rgba(167,139,250,0.08)', focus: 'Evangelist — teams, culture, buy-in', peaks: ['leadership', 'ops', 'strategy'] },
+];
+
+function getArchetype(scores) {
+  const vals = COMPETENCIES.map(c => scores[c.id] || 0);
+  const total = vals.reduce((a, b) => a + b, 0);
+  if (total === 0) return null;
+  const avg = total / vals.length;
+  const variance = vals.reduce((s, v) => s + Math.pow(v - avg, 2), 0) / vals.length;
+  if (variance < 0.8 && total >= 20) return ARCHETYPES.find(a => a.name === 'The Generalist');
+  let best = null, bestS = -1;
+  for (const arch of ARCHETYPES) {
+    if (!arch.peaks.length) continue;
+    const s = arch.peaks.reduce((sum, p) => sum + (scores[p] || 0), 0) / arch.peaks.length;
+    if (s > bestS) { bestS = s; best = arch; }
+  }
+  return best;
+}
+
+/* ── COMPONENTS ── */
+function RatingDots({ compId, value, color, glow, onRate }) {
+  return (
+    <div className="rating">
+      <span className="rating-label">Novice</span>
+      <div className="dots">
+        {[1,2,3,4,5].map(n => (
+          <button key={n} className={`dot${value >= n ? ' filled' : ''}`}
+            style={{ '--dot-color': color, '--dot-glow': glow }}
+            onClick={() => onRate(compId, value === n ? 0 : n)}>
+            <span className="dot-num">{n}</span>
+          </button>
+        ))}
+      </div>
+      <span className="rating-label end">Expert</span>
+      <div className={`score-val${value ? ' visible' : ''}`} style={{ color }}>{value || ''}</div>
+    </div>
+  );
+}
+
+function RadarChart({ scores, size = 240 }) {
+  const c = size / 2, r = size / 2 - 28, levels = 5;
+  const ids = COMPETENCIES.map(x => x.id);
+  const step = (Math.PI * 2) / ids.length;
+  const pt = (i, v) => {
+    const a = step * i - Math.PI / 2, d = (v / 5) * r;
+    return { x: c + d * Math.cos(a), y: c + d * Math.sin(a) };
+  };
+  const rings = Array.from({ length: levels }, (_, i) => {
+    const rr = ((i + 1) / levels) * r;
+    return ids.map((_, j) => { const a = step * j - Math.PI / 2; return `${c + rr * Math.cos(a)},${c + rr * Math.sin(a)}`; }).join(' ');
+  });
+  const dataPts = ids.map((id, i) => { const p = pt(i, scores[id] || 0); return `${p.x},${p.y}`; }).join(' ');
+  const labels = COMPETENCIES.map((comp, i) => {
+    const a = step * i - Math.PI / 2, lr = r + 16;
+    return { x: c + lr * Math.cos(a), y: c + lr * Math.sin(a), t: comp.name.split(' ')[0], color: comp.color };
+  });
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+      {rings.map((p, i) => <polygon key={i} points={p} fill="none" stroke="#252836" strokeWidth="1" opacity={0.4 + i * 0.1} />)}
+      {ids.map((_, i) => { const a = step * i - Math.PI / 2; return <line key={i} x1={c} y1={c} x2={c + r * Math.cos(a)} y2={c + r * Math.sin(a)} stroke="#252836" strokeWidth="1" />; })}
+      <polygon points={dataPts} fill="url(#rg)" stroke="#ff4d6a" strokeWidth="1.5" opacity="0.85" />
+      {ids.map((id, i) => { const p = pt(i, scores[id] || 0); return scores[id] > 0 ? <circle key={id} cx={p.x} cy={p.y} r="3" fill={COMPETENCIES[i].color} /> : null; })}
+      {labels.map((l, i) => <text key={i} x={l.x} y={l.y} textAnchor="middle" dominantBaseline="middle" fill={l.color} fontSize="7" fontFamily="Space Mono, monospace" opacity="0.6">{l.t}</text>)}
+      <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#ff4d6a" stopOpacity="0.2" /><stop offset="50%" stopColor="#a78bfa" stopOpacity="0.1" /><stop offset="100%" stopColor="#00e5c7" stopOpacity="0.15" /></linearGradient></defs>
+    </svg>
+  );
+}
+
+function ProgressRing({ pct, color, size = 100 }) {
+  const stroke = 5, r = (size - stroke * 2) / 2, circ = 2 * Math.PI * r;
+  const offset = circ - (pct / 100) * circ;
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#1e2133" strokeWidth={stroke} />
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color || '#ff4d6a'} strokeWidth={stroke}
+        strokeDasharray={circ} strokeDashoffset={offset} strokeLinecap="round"
+        transform={`rotate(-90 ${size/2} ${size/2})`} style={{ transition: 'stroke-dashoffset 0.6s ease' }} />
+      <text x={size/2} y={size/2 - 6} textAnchor="middle" dominantBaseline="middle"
+        fill={color || '#ff4d6a'} fontFamily="Bebas Neue, sans-serif" fontSize="28">{pct}</text>
+      <text x={size/2} y={size/2 + 12} textAnchor="middle" dominantBaseline="middle"
+        fill="#3d4162" fontFamily="Space Mono, monospace" fontSize="8">/ 100</text>
+    </svg>
+  );
+}
+
+/* ── RESULTS PANEL (reused in sidebar + mobile) ── */
+function ResultsPanel({ name, careerLevel, compScores, softScores, assetStatuses, experienceChecks, onReset }) {
+  const compTotal = Object.values(compScores).reduce((a, b) => a + b, 0);
+  const softTotal = Object.values(softScores).reduce((a, b) => a + b, 0);
+  let assetScore = 0;
+  Object.values(assetStatuses).forEach(v => { if (v === 'ready') assetScore += 3; else if (v === 'wip') assetScore += 2; else if (v === 'outdated') assetScore += 1; });
+  const expCount = Object.values(experienceChecks).filter(Boolean).length;
+  const grandTotal = compTotal + softTotal + assetScore + expCount * 2;
+  const grandMax = 50 + 30 + 30 + 20;
+  const pct = Math.round((grandTotal / grandMax) * 100);
+
+  const compRated = Object.values(compScores).filter(v => v > 0).length;
+  const archetype = getArchetype(compScores);
+  const allCompRated = compRated === COMPETENCIES.length;
+
+  const sections = [
+    { label: 'Competencies', score: compTotal, max: 50, color: '#ff4d6a' },
+    { label: 'Soft Skills', score: softTotal, max: 30, color: '#ffc645' },
+    { label: 'Prof. Assets', score: assetScore, max: 30, color: '#00e5c7' },
+    { label: 'Experience', score: expCount * 2, max: 20, color: '#a78bfa' },
+  ];
+
+  const growthAreas = [
+    ...COMPETENCIES.map(c => ({ name: c.name, score: compScores[c.id] || 0, color: c.color, sec: 'Competency' })),
+    ...SOFT_SKILLS.map(s => ({ name: s.name, score: softScores[s.id] || 0, color: s.color, sec: 'Soft Skill' })),
+  ].sort((a, b) => a.score - b.score).slice(0, 3);
+
+  return (
+    <div className="results-panel">
+      <div className="rp-gradient-bar" />
+      <div className="rp-tag">Your Full Assessment</div>
+
+      {/* Name + career */}
+      {name && <div style={{ textAlign: 'center', fontWeight: 600, fontSize: 16, marginBottom: 8 }}>{name}</div>}
+      {careerLevel && (
+        <div className="rp-career">
+          <div className="rp-career-label">Career Stage</div>
+          <div className="rp-career-value">{CAREER_LEVELS.find(l => l.id === careerLevel)?.label}</div>
+        </div>
+      )}
+
+      {/* Progress ring */}
+      <div className="progress-ring-wrap">
+        <ProgressRing pct={pct} color={allCompRated && archetype ? archetype.color : '#ff4d6a'} />
+        <div className="progress-ring-label">{grandTotal} / {grandMax} points</div>
+      </div>
+
+      {/* Archetype */}
+      <div className="rp-archetype">
+        {allCompRated && archetype ? (
+          <>
+            <div className="rp-arch-name" style={{ color: archetype.color }}>{archetype.name}</div>
+            <div className="rp-arch-desc">{archetype.focus}</div>
+          </>
+        ) : (
+          <div className="rp-arch-placeholder">
+            {compRated === 0 ? 'Rate competencies to reveal archetype' : `${COMPETENCIES.length - compRated} competencies left`}
+          </div>
+        )}
+      </div>
+
+      {/* Section stats */}
+      <div className="rp-stats">
+        {sections.map(s => (
+          <div className="rp-stat" key={s.label}>
+            <div className="rp-stat-num" style={{ color: s.color }}>{s.score}<span className="rp-stat-max">/{s.max}</span></div>
+            <div className="rp-stat-label">{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Radar */}
+      {compRated > 0 && (
+        <div className="rp-radar"><RadarChart scores={compScores} size={240} /></div>
+      )}
+
+      {/* Competency + Soft bars */}
+      <div className="rp-section-title">Skill Breakdown</div>
+      {[...COMPETENCIES.map(c => ({ label: c.name, score: compScores[c.id] || 0, color: c.color })),
+        ...SOFT_SKILLS.map(s => ({ label: s.name, score: softScores[s.id] || 0, color: s.color }))
+      ].map(row => (
+        <div className="rp-bar-row" key={row.label}>
+          <span className="rp-bar-label">{row.label}</span>
+          <div className="rp-bar-track">
+            <div className="rp-bar-fill" style={{ width: `${(row.score / 5) * 100}%`, background: row.color, opacity: row.score ? 0.8 : 0.1 }} />
+          </div>
+          <span className="rp-bar-val" style={{ color: row.score ? row.color : 'var(--text-muted)' }}>{row.score || '—'}</span>
+        </div>
+      ))}
+
+      {/* Professional Assets Summary */}
+      <div className="rp-section-title">Professional Presence</div>
+      {PROFESSIONAL_ASSETS.map(a => {
+        const st = assetStatuses[a.id] || 'none';
+        const stObj = ASSET_STATUSES.find(s => s.id === st);
+        return (
+          <div className="rp-asset-row" key={a.id}>
+            <div className="rp-asset-dot" style={{ background: st !== 'none' ? stObj.color : '#252836' }} />
+            <span className="rp-asset-name">{a.title}</span>
+            <span className="rp-asset-status" style={{ color: stObj.color }}>{st === 'none' ? '—' : stObj.label}</span>
+          </div>
+        );
+      })}
+
+      {/* Growth */}
+      {(compRated > 0 || Object.values(softScores).some(v => v > 0)) && (
+        <>
+          <div className="rp-section-title">Top Growth Areas</div>
+          {growthAreas.map(g => (
+            <div className="rp-growth-item" key={g.name}>
+              <div className="rp-growth-name" style={{ color: g.color }}>{g.name}</div>
+              <div className="rp-growth-score">{g.sec} · {g.score}/5</div>
+            </div>
+          ))}
+        </>
+      )}
+
+      {/* Archetype legend */}
+      <div className="rp-section-title">All Archetypes</div>
+      <div className="rp-arch-grid">
+        {ARCHETYPES.map(arch => {
+          const isMatch = allCompRated && archetype && archetype.name === arch.name;
+          return (
+            <div key={arch.name} className={`rp-arch-card${isMatch ? ' matched' : ''}`}
+              style={{ '--m-color': arch.color + '50', '--m-glow': arch.glow }}>
+              <div className="rp-arch-card-name" style={{ color: isMatch ? arch.color : 'var(--text)' }}>
+                {arch.name} {isMatch && '←'}
+              </div>
+              <div className="rp-arch-card-focus">{arch.focus}</div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="rp-btn-row">
+        <button className="btn btn-ghost" onClick={onReset}>Reset</button>
+        <button className="btn btn-fill" onClick={() => window.print()}>Print</button>
+      </div>
+
+      <div className="footer">
+        <div className="footer-logo">Jacksonville Design Community</div>
+        <div className="footer-sub">UX Assessment · {new Date().getFullYear()}</div>
+      </div>
+    </div>
+  );
+}
+
+/* ── APP ── */
+function App() {
+  const [name, setName] = useState('');
+  const [careerLevel, setCareerLevel] = useState(null);
+  const [compScores, setCompScores] = useState({});
+  const [softScores, setSoftScores] = useState({});
+  const [assetStatuses, setAssetStatuses] = useState({});
+  const [experienceChecks, setExperienceChecks] = useState({});
+  const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  const handleCompRate = useCallback((id, val) => setCompScores(p => ({ ...p, [id]: val })), []);
+  const handleSoftRate = useCallback((id, val) => setSoftScores(p => ({ ...p, [id]: val })), []);
+  const handleAssetStatus = useCallback((id, status) => setAssetStatuses(p => ({ ...p, [id]: p[id] === status ? null : status })), []);
+  const handleExpToggle = useCallback((id) => setExperienceChecks(p => ({ ...p, [id]: !p[id] })), []);
+
+  const handleReset = () => {
+    setName(''); setCareerLevel(null); setCompScores({}); setSoftScores({});
+    setAssetStatuses({}); setExperienceChecks({});
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const resultsProps = { name, careerLevel, compScores, softScores, assetStatuses, experienceChecks, onReset: handleReset };
+
+  return (
+    <div className="shell">
+      {/* LEFT: INPUT FORM */}
+      <div className="main">
+        <div className="header">
+          <div className="tag">Workshop Activity</div>
+          <h1>UX DESIGNER<span>SCORECARD</span></h1>
+          <p className="subtitle">Comprehensive self-assessment across craft, career, presence, and experience. Be honest — this is for you.</p>
+        </div>
+
+        <div className="meta-row">
+          <span className="meta-label">Designer</span>
+          <input className="meta-input" type="text" placeholder="Your name" value={name} onChange={e => setName(e.target.value)} />
+          <span className="date-display">{today}</span>
+        </div>
+
+        {/* S1: Career */}
+        <div className="section">
+          <div className="section-header">
+            <div className="section-num" style={{ background: 'var(--coral-glow)', color: 'var(--coral)' }}>01</div>
+            <div>
+              <div className="section-title">Career Stage</div>
+              <div className="section-subtitle">Where are you on the design career ladder?</div>
+            </div>
+          </div>
+          <div className="ladder">
+            {CAREER_LEVELS.map(l => (
+              <button key={l.id} className={`ladder-btn${careerLevel === l.id ? ' selected' : ''}`}
+                onClick={() => setCareerLevel(careerLevel === l.id ? null : l.id)}>
+                {l.label}<span className="ladder-yrs">{l.yrs}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* S2: Competencies */}
+        <div className="section">
+          <div className="section-header">
+            <div className="section-num" style={{ background: 'var(--amber-glow)', color: 'var(--amber)' }}>02</div>
+            <div>
+              <div className="section-title">Core Competencies</div>
+              <div className="section-subtitle">Rate your skill level — 1 (novice) to 5 (expert)</div>
+            </div>
+          </div>
+          <div className="card-grid">
+            {COMPETENCIES.map((comp, idx) => {
+              const val = compScores[comp.id] || 0;
+              return (
+                <div key={comp.id} className={`card${val ? ' rated' : ''}`}
+                  style={{ '--card-glow': comp.glow, borderColor: val ? comp.color + '35' : undefined }}>
+                  <div className="card-num">{String(idx + 1).padStart(2, '0')}</div>
+                  <div className="card-icon" style={{ background: comp.glow, borderColor: comp.color + '30', color: comp.color }}>{comp.icon}</div>
+                  <div className="card-name">{comp.name}</div>
+                  <div className="card-desc">{comp.desc}</div>
+                  <RatingDots compId={comp.id} value={val} color={comp.color} glow={comp.glow} onRate={handleCompRate} />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* S3: Soft Skills */}
+        <div className="section">
+          <div className="section-header">
+            <div className="section-num" style={{ background: 'var(--teal-glow)', color: 'var(--teal)' }}>03</div>
+            <div>
+              <div className="section-title">Soft Skills & Communication</div>
+              <div className="section-subtitle">The human skills that separate good from great</div>
+            </div>
+          </div>
+          <div className="card-grid">
+            {SOFT_SKILLS.map((skill, idx) => {
+              const val = softScores[skill.id] || 0;
+              return (
+                <div key={skill.id} className={`card${val ? ' rated' : ''}`}
+                  style={{ '--card-glow': skill.glow, borderColor: val ? skill.color + '35' : undefined }}>
+                  <div className="card-num">{String(idx + 1).padStart(2, '0')}</div>
+                  <div className="card-icon" style={{ background: skill.glow, borderColor: skill.color + '30', color: skill.color }}>{skill.icon}</div>
+                  <div className="card-name">{skill.name}</div>
+                  <div className="card-desc">{skill.desc}</div>
+                  <RatingDots compId={skill.id} value={val} color={skill.color} glow={skill.glow} onRate={handleSoftRate} />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* S4: Professional Assets */}
+        <div className="section">
+          <div className="section-header">
+            <div className="section-num" style={{ background: 'var(--sky-glow)', color: 'var(--sky)' }}>04</div>
+            <div>
+              <div className="section-title">Professional Presence</div>
+              <div className="section-subtitle">Resume, portfolio, online presence & assets</div>
+            </div>
+          </div>
+          <div className="checklist">
+            {PROFESSIONAL_ASSETS.map(asset => {
+              const status = assetStatuses[asset.id] || 'none';
+              return (
+                <div key={asset.id} className="check-item"
+                  style={{
+                    borderColor: status !== 'none' ? asset.color + '30' : undefined,
+                    background: status !== 'none' ? asset.glow : undefined,
+                    cursor: 'default',
+                  }}>
+                  <div className="check-text">
+                    <div className="check-title" style={{ color: status !== 'none' ? asset.color : undefined }}>{asset.title}</div>
+                    <div className="check-sub">{asset.sub}</div>
+                    <div className="status-row">
+                      {ASSET_STATUSES.map(s => (
+                        <button key={s.id} className={`status-btn${status === s.id ? ' active' : ''}`}
+                          style={{ '--stat-color': s.color, '--stat-glow': s.glow }}
+                          onClick={() => handleAssetStatus(asset.id, s.id)}>
+                          {s.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* S5: Experience */}
+        <div className="section">
+          <div className="section-header">
+            <div className="section-num" style={{ background: 'var(--purple-glow)', color: 'var(--purple)' }}>05</div>
+            <div>
+              <div className="section-title">Experience & Track Record</div>
+              <div className="section-subtitle">Check everything you've done</div>
+            </div>
+          </div>
+          <div className="checklist">
+            {EXPERIENCE_ITEMS.map(item => {
+              const checked = !!experienceChecks[item.id];
+              return (
+                <div key={item.id} className={`check-item${checked ? ' checked' : ''}`}
+                  style={{ '--check-color': item.color, '--check-glow': item.glow }}
+                  onClick={() => handleExpToggle(item.id)}>
+                  <div className="checkbox"><span className="checkmark">✓</span></div>
+                  <div className="check-text">
+                    <div className="check-title">{item.title}</div>
+                    <div className="check-sub">{item.sub}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Mobile results (below form on small screens) */}
+        <div className="mobile-results">
+          <ResultsPanel {...resultsProps} />
+        </div>
+      </div>
+
+      {/* RIGHT: STICKY SIDEBAR RESULTS */}
+      <div className="sidebar">
+        <ResultsPanel {...resultsProps} />
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+</script>
+</body>
+</html>
