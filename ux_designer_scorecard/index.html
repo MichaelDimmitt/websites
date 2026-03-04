@@ -1,18 +1,13 @@
 <!DOCTYPE html>
-<script>
-if (location.protocol !== 'https:' && !location.href.includes('3000')) {
-  location.replace(`https:${location.href.substring(location.protocol.length)}`);
-  console.log('not https! redirecting');
-}
-</script>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>UX Designer Scorecard</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root {
+  /* ═══ DARK THEME (default) ═══ */
+  :root, [data-theme="dark"] {
     --bg: #08090e;
     --surface: #10121a;
     --surface2: #181b27;
@@ -43,22 +38,92 @@ if (location.protocol !== 'https:' && !location.href.includes('3000')) {
     --rose: #fb7185;
     --rose-glow: rgba(251,113,133,0.12);
     --sidebar-w: 380px;
+    --dot-filled-text: #08090e;
+    --check-icon: #08090e;
+    --ring-track: #1e2133;
+    --radar-grid: #252836;
+    --grain-opacity: 0.025;
+    --gradient-title-from: #ff4d6a;
+    --gradient-title-to: #ffc645;
   }
+
+  /* ═══ LIGHT THEME ═══ */
+  [data-theme="light"] {
+    --bg: #f3f4f8;
+    --surface: #ffffff;
+    --surface2: #eceef3;
+    --surface3: #e2e5ec;
+    --border: #d0d4e0;
+    --border-accent: #b8bdd0;
+    --text: #1a1d2e;
+    --text-dim: #555a78;
+    --text-muted: #9298b4;
+    --coral: #e03358;
+    --coral-glow: rgba(224,51,88,0.1);
+    --orange: #d46828;
+    --orange-glow: rgba(212,104,40,0.1);
+    --amber: #c49500;
+    --amber-glow: rgba(196,149,0,0.1);
+    --green: #22a63e;
+    --green-glow: rgba(34,166,62,0.1);
+    --teal: #00aa94;
+    --teal-glow: rgba(0,170,148,0.1);
+    --sky: #1088c8;
+    --sky-glow: rgba(16,136,200,0.1);
+    --indigo: #5560cc;
+    --indigo-glow: rgba(85,96,204,0.1);
+    --purple: #7050b8;
+    --purple-glow: rgba(112,80,184,0.1);
+    --pink: #c84090;
+    --pink-glow: rgba(200,64,144,0.1);
+    --rose: #cc4460;
+    --rose-glow: rgba(204,68,96,0.1);
+    --dot-filled-text: #ffffff;
+    --check-icon: #ffffff;
+    --ring-track: #e2e5ec;
+    --radar-grid: #d0d4e0;
+    --grain-opacity: 0.015;
+    --gradient-title-from: #e03358;
+    --gradient-title-to: #c49500;
+  }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text);
     min-height: 100vh; -webkit-font-smoothing: antialiased;
+    transition: background 0.4s ease, color 0.3s ease;
   }
   .grain {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none;
-    z-index: 9999; opacity: 0.025;
+    z-index: 9999; opacity: var(--grain-opacity);
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  /* ── LAYOUT ── */
-  .shell {
-    display: flex; min-height: 100vh;
+  /* ── THEME TOGGLE ── */
+  .theme-toggle {
+    position: fixed; top: 16px; right: 16px; z-index: 1000;
+    width: 52px; height: 28px; border-radius: 14px;
+    background: var(--surface2); border: 1px solid var(--border);
+    cursor: pointer; transition: all 0.35s ease;
+    display: flex; align-items: center; padding: 0 3px;
   }
+  .theme-toggle:hover { border-color: var(--border-accent); }
+  .theme-toggle-knob {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--coral); display: flex; align-items: center; justify-content: center;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), background 0.35s;
+    font-size: 12px; line-height: 1;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+  [data-theme="dark"] .theme-toggle-knob { transform: translateX(0); }
+  [data-theme="light"] .theme-toggle-knob { transform: translateX(23px); background: var(--amber); }
+
+  @media (max-width: 1060px) {
+    .theme-toggle { right: 12px; top: 12px; }
+  }
+
+  /* ── LAYOUT ── */
+  .shell { display: flex; min-height: 100vh; }
   .main {
     flex: 1; min-width: 0; padding: 44px 32px 80px;
     max-width: 760px; margin: 0 auto;
@@ -69,12 +134,12 @@ if (location.protocol !== 'https:' && !location.href.includes('3000')) {
     border-left: 1px solid var(--border); background: var(--surface);
     padding: 32px 24px;
     scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+    transition: background 0.4s ease, border-color 0.3s ease;
   }
   .sidebar::-webkit-scrollbar { width: 4px; }
   .sidebar::-webkit-scrollbar-track { background: transparent; }
   .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-  /* Mobile: sidebar becomes bottom section */
   .mobile-results { display: none; }
   @media (max-width: 1060px) {
     .shell { flex-direction: column; }
@@ -92,14 +157,16 @@ if (location.protocol !== 'https:' && !location.href.includes('3000')) {
   .tag {
     font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 3px;
     text-transform: uppercase; color: var(--coral); margin-bottom: 12px; display: inline-block;
-    padding: 4px 12px; border: 1px solid rgba(255,77,106,0.25); border-radius: 2px; background: var(--coral-glow);
+    padding: 4px 12px; border: 1px solid; border-color: var(--coral-glow); border-radius: 2px;
+    background: var(--coral-glow); transition: all 0.3s;
   }
   h1 {
     font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px, 6vw, 68px);
     line-height: 0.92; letter-spacing: -1px; margin-bottom: 8px;
   }
   h1 span {
-    display: block; background: linear-gradient(135deg, var(--coral), var(--amber));
+    display: block;
+    background: linear-gradient(135deg, var(--gradient-title-from), var(--gradient-title-to));
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   }
   .subtitle { font-size: 13px; color: var(--text-dim); font-weight: 300; max-width: 480px; margin: 0 auto; line-height: 1.55; }
@@ -116,7 +183,7 @@ if (location.protocol !== 'https:' && !location.href.includes('3000')) {
   .meta-input {
     background: var(--bg); border: 1px solid var(--border); color: var(--text);
     font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 8px 16px; border-radius: 4px;
-    width: 220px; outline: none; transition: border-color 0.3s;
+    width: 220px; outline: none; transition: border-color 0.3s, background 0.3s, color 0.3s;
   }
   .meta-input:focus { border-color: var(--coral); box-shadow: 0 0 0 3px var(--coral-glow); }
   .meta-input::placeholder { color: var(--text-muted); }
@@ -155,7 +222,7 @@ if (location.protocol !== 'https:' && !location.href.includes('3000')) {
 
   .card {
     background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
-    padding: 20px; position: relative; overflow: hidden; transition: border-color 0.3s, box-shadow 0.3s;
+    padding: 20px; position: relative; overflow: hidden; transition: all 0.3s;
   }
   .card:hover { border-color: var(--border-accent); }
   .card.rated { box-shadow: 0 0 18px var(--card-glow, var(--coral-glow)); }
@@ -192,7 +259,7 @@ if (location.protocol !== 'https:' && !location.href.includes('3000')) {
     font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-muted);
     pointer-events: none; transition: color 0.2s;
   }
-  .dot.filled .dot-num { color: var(--bg); font-weight: 700; }
+  .dot.filled .dot-num { color: var(--dot-filled-text); font-weight: 700; }
   .score-val {
     font-family: 'Bebas Neue', sans-serif; font-size: 22px; margin-left: 4px;
     min-width: 18px; text-align: center; line-height: 1; opacity: 0; transition: opacity 0.3s;
@@ -214,7 +281,7 @@ if (location.protocol !== 'https:' && !location.href.includes('3000')) {
     flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; margin-top: 1px;
   }
   .check-item.checked .checkbox { background: var(--check-color, var(--teal)); border-color: var(--check-color, var(--teal)); }
-  .checkmark { opacity: 0; transition: opacity 0.2s; color: var(--bg); font-size: 12px; font-weight: 700; }
+  .checkmark { opacity: 0; transition: opacity 0.2s; color: var(--check-icon); font-size: 12px; font-weight: 700; }
   .check-item.checked .checkmark { opacity: 1; }
   .check-text { flex: 1; }
   .check-title { font-weight: 600; font-size: 12px; margin-bottom: 2px; }
@@ -231,10 +298,7 @@ if (location.protocol !== 'https:' && !location.href.includes('3000')) {
   .status-btn:hover { border-color: var(--border-accent); }
   .status-btn.active { border-color: var(--stat-color); color: var(--stat-color); background: var(--stat-glow); }
 
-  /* ═══════════════════════════════════════
-     SIDEBAR / RESULTS PANEL STYLES
-     ═══════════════════════════════════════ */
-  .results-panel {}
+  /* ═══ SIDEBAR / RESULTS ═══ */
   .rp-tag {
     font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 3px;
     text-transform: uppercase; color: var(--text-muted); margin-bottom: 20px; text-align: center;
@@ -243,15 +307,11 @@ if (location.protocol !== 'https:' && !location.href.includes('3000')) {
     height: 2px; margin-bottom: 24px; border-radius: 1px;
     background: linear-gradient(90deg, var(--coral), var(--amber), var(--teal), var(--purple), var(--pink));
   }
-
-  /* Progress ring */
   .progress-ring-wrap { text-align: center; margin-bottom: 24px; }
   .progress-ring-label {
     font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 1.5px;
     text-transform: uppercase; color: var(--text-muted); margin-top: 8px;
   }
-
-  /* Career badge */
   .rp-career {
     text-align: center; margin-bottom: 20px; padding: 10px;
     border: 1px solid var(--border); border-radius: 6px; background: var(--surface2);
@@ -261,16 +321,11 @@ if (location.protocol !== 'https:' && !location.href.includes('3000')) {
     text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;
   }
   .rp-career-value { font-weight: 700; font-size: 14px; color: var(--coral); }
-
-  /* Archetype */
   .rp-archetype { text-align: center; margin-bottom: 20px; }
-  .rp-arch-name {
-    font-family: 'Bebas Neue', sans-serif; font-size: 32px; line-height: 1; margin-bottom: 4px;
-  }
+  .rp-arch-name { font-family: 'Bebas Neue', sans-serif; font-size: 32px; line-height: 1; margin-bottom: 4px; }
   .rp-arch-desc { font-size: 11px; color: var(--text-dim); line-height: 1.5; }
   .rp-arch-placeholder { color: var(--text-muted); font-size: 13px; text-align: center; padding: 12px 0; }
 
-  /* Section breakdown */
   .rp-section-title {
     font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 2px;
     text-transform: uppercase; color: var(--text-muted); margin: 20px 0 10px; padding-top: 16px;
@@ -282,7 +337,6 @@ if (location.protocol !== 'https:' && !location.href.includes('3000')) {
   .rp-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
   .rp-bar-val { font-family: 'Space Mono', monospace; font-size: 9px; width: 16px; color: var(--text-dim); text-align: right; }
 
-  /* Stats mini */
   .rp-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
   .rp-stat {
     text-align: center; padding: 10px 6px; border: 1px solid var(--border);
@@ -292,16 +346,13 @@ if (location.protocol !== 'https:' && !location.href.includes('3000')) {
   .rp-stat-max { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-muted); }
   .rp-stat-label { font-family: 'Space Mono', monospace; font-size: 7px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-top: 2px; }
 
-  /* Asset summary */
   .rp-asset-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
   .rp-asset-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
   .rp-asset-name { font-size: 10px; color: var(--text-dim); flex: 1; }
   .rp-asset-status { font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 0.5px; text-transform: uppercase; }
 
-  /* Radar (sidebar) */
   .rp-radar { display: flex; justify-content: center; margin: 12px 0; }
 
-  /* Growth */
   .rp-growth-item {
     padding: 8px 10px; border-radius: 5px; border: 1px solid var(--border);
     background: var(--surface2); margin-bottom: 6px;
@@ -309,7 +360,6 @@ if (location.protocol !== 'https:' && !location.href.includes('3000')) {
   .rp-growth-name { font-weight: 600; font-size: 11px; }
   .rp-growth-score { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-muted); }
 
-  /* Archetype legend small */
   .rp-arch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
   .rp-arch-card {
     padding: 8px 10px; border-radius: 5px; border: 1px solid var(--border); background: var(--surface2); transition: all 0.3s;
@@ -318,7 +368,6 @@ if (location.protocol !== 'https:' && !location.href.includes('3000')) {
   .rp-arch-card-name { font-weight: 700; font-size: 10px; margin-bottom: 1px; }
   .rp-arch-card-focus { font-size: 9px; color: var(--text-dim); line-height: 1.3; }
 
-  /* Buttons */
   .rp-btn-row { display: flex; gap: 8px; margin-top: 16px; }
   .btn {
     font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 1.5px;
@@ -327,8 +376,8 @@ if (location.protocol !== 'https:' && !location.href.includes('3000')) {
   }
   .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
   .btn-ghost:hover { border-color: var(--coral); color: var(--coral); }
-  .btn-fill { background: var(--coral); border: 1px solid var(--coral); color: var(--bg); }
-  .btn-fill:hover { background: #ff3355; }
+  .btn-fill { background: var(--coral); border: 1px solid var(--coral); color: var(--dot-filled-text); }
+  .btn-fill:hover { opacity: 0.9; }
 
   .footer {
     text-align: center; padding-top: 24px; border-top: 1px solid var(--border); margin-top: 36px;
@@ -340,62 +389,78 @@ if (location.protocol !== 'https:' && !location.href.includes('3000')) {
   }
 
   @media print {
-    body { background: #fff; color: #111; }
-    .grain { display: none; }
+    .grain, .theme-toggle { display: none; }
     .shell { display: block; }
     .sidebar { display: none; }
     .mobile-results { display: block !important; }
     .main { max-width: 100%; padding: 20px; }
-    .card, .check-item, .rp-stat, .rp-arch-card, .rp-growth-item { background: #fafafa; border-color: #ddd; break-inside: avoid; }
+    .card, .check-item, .rp-stat, .rp-arch-card, .rp-growth-item { break-inside: avoid; }
     .dot.filled, .ladder-btn.selected, .status-btn.active, .check-item.checked { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-    h1 { -webkit-text-fill-color: #111; background: none; }
-    h1 span { -webkit-text-fill-color: #c0392b; background: none; }
-    .btn { display: none; }
   }
 </style>
 </head>
 <body>
 <div class="grain"></div>
+
+<!-- Theme toggle -->
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle light/dark mode">
+  <div class="theme-toggle-knob"><span id="themeIcon">&#9790;</span></div>
+</button>
+
 <div id="app"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+
+<script>
+  // Theme toggle logic (outside React for instant load)
+  const toggle = document.getElementById('themeToggle');
+  const icon = document.getElementById('themeIcon');
+  function setTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    icon.innerHTML = t === 'dark' ? '&#9790;' : '&#9728;';
+  }
+  toggle.addEventListener('click', function() {
+    const current = document.documentElement.getAttribute('data-theme');
+    setTheme(current === 'dark' ? 'light' : 'dark');
+  });
+</script>
+
 <script type="text/babel">
 const { useState, useCallback, useMemo } = React;
 
-/* ── DATA ── */
 const CAREER_LEVELS = [
   { id: 'student', label: 'Student / Intern', yrs: '0 yrs' },
-  { id: 'junior', label: 'Junior', yrs: '0–2 yrs' },
-  { id: 'mid', label: 'Mid-Level', yrs: '2–5 yrs' },
-  { id: 'senior', label: 'Senior', yrs: '5–8 yrs' },
-  { id: 'lead', label: 'Lead', yrs: '7–10 yrs' },
+  { id: 'junior', label: 'Junior', yrs: '0\u20132 yrs' },
+  { id: 'mid', label: 'Mid-Level', yrs: '2\u20135 yrs' },
+  { id: 'senior', label: 'Senior', yrs: '5\u20138 yrs' },
+  { id: 'lead', label: 'Lead', yrs: '7\u201310 yrs' },
   { id: 'principal', label: 'Principal / Staff', yrs: '10+ yrs' },
   { id: 'manager', label: 'Manager / Director', yrs: '8+ yrs' },
   { id: 'vp', label: 'VP / Head of Design', yrs: '12+ yrs' },
 ];
 
 const COMPETENCIES = [
-  { id: 'research', name: 'User Research', desc: 'Interviews, usability testing, synthesis, insight generation', icon: '🔍', color: '#ff4d6a', glow: 'rgba(255,77,106,0.12)' },
-  { id: 'ia', name: 'Information Architecture', desc: 'Content structure, navigation, taxonomy, sitemaps', icon: '🏗', color: '#ff8a4d', glow: 'rgba(255,138,77,0.12)' },
-  { id: 'interaction', name: 'Interaction Design', desc: 'Flows, wireframes, prototyping, micro-interactions', icon: '⚡', color: '#ffc645', glow: 'rgba(255,198,69,0.12)' },
-  { id: 'visual', name: 'Visual Design', desc: 'Layout, typography, color, iconography, brand expression', icon: '🎨', color: '#4ddb6a', glow: 'rgba(77,219,106,0.12)' },
-  { id: 'systems', name: 'Design Systems', desc: 'Components, tokens, documentation, governance', icon: '🧱', color: '#00e5c7', glow: 'rgba(0,229,199,0.12)' },
-  { id: 'accessibility', name: 'Accessibility', desc: 'WCAG, assistive tech, inclusive patterns', icon: '♿', color: '#38bdf8', glow: 'rgba(56,189,248,0.12)' },
-  { id: 'strategy', name: 'Product Strategy', desc: 'Roadmapping, metrics, stakeholder alignment, OKRs', icon: '🧭', color: '#818cf8', glow: 'rgba(129,140,248,0.12)' },
-  { id: 'leadership', name: 'Design Leadership', desc: 'Mentoring, critique, team building, org influence', icon: '👑', color: '#a78bfa', glow: 'rgba(167,139,250,0.12)' },
-  { id: 'ops', name: 'Design Operations', desc: 'Process, tooling, team scaling, workflow management', icon: '⚙️', color: '#f472b6', glow: 'rgba(244,114,182,0.12)' },
-  { id: 'craft', name: 'Prototyping & Craft', desc: 'Hi-fi execution, motion, code awareness, tool mastery', icon: '✦', color: '#fb7185', glow: 'rgba(251,113,133,0.12)' },
+  { id: 'research', name: 'User Research', desc: 'Interviews, usability testing, synthesis, insight generation', icon: '\uD83D\uDD0D', color: '#ff4d6a', glow: 'rgba(255,77,106,0.12)' },
+  { id: 'ia', name: 'Information Architecture', desc: 'Content structure, navigation, taxonomy, sitemaps', icon: '\uD83C\uDFD7', color: '#ff8a4d', glow: 'rgba(255,138,77,0.12)' },
+  { id: 'interaction', name: 'Interaction Design', desc: 'Flows, wireframes, prototyping, micro-interactions', icon: '\u26A1', color: '#ffc645', glow: 'rgba(255,198,69,0.12)' },
+  { id: 'visual', name: 'Visual Design', desc: 'Layout, typography, color, iconography, brand expression', icon: '\uD83C\uDFA8', color: '#4ddb6a', glow: 'rgba(77,219,106,0.12)' },
+  { id: 'systems', name: 'Design Systems', desc: 'Components, tokens, documentation, governance', icon: '\uD83E\uDDF1', color: '#00e5c7', glow: 'rgba(0,229,199,0.12)' },
+  { id: 'accessibility', name: 'Accessibility', desc: 'WCAG, assistive tech, inclusive patterns', icon: '\u267F', color: '#38bdf8', glow: 'rgba(56,189,248,0.12)' },
+  { id: 'strategy', name: 'Product Strategy', desc: 'Roadmapping, metrics, stakeholder alignment, OKRs', icon: '\uD83E\uDDED', color: '#818cf8', glow: 'rgba(129,140,248,0.12)' },
+  { id: 'leadership', name: 'Design Leadership', desc: 'Mentoring, critique, team building, org influence', icon: '\uD83D\uDC51', color: '#a78bfa', glow: 'rgba(167,139,250,0.12)' },
+  { id: 'ops', name: 'Design Operations', desc: 'Process, tooling, team scaling, workflow management', icon: '\u2699\uFE0F', color: '#f472b6', glow: 'rgba(244,114,182,0.12)' },
+  { id: 'craft', name: 'Prototyping & Craft', desc: 'Hi-fi execution, motion, code awareness, tool mastery', icon: '\u2726', color: '#fb7185', glow: 'rgba(251,113,133,0.12)' },
 ];
 
 const SOFT_SKILLS = [
-  { id: 'presentation', name: 'Presenting & Storytelling', desc: 'Pitching ideas, presenting to stakeholders', icon: '🎤', color: '#ff4d6a', glow: 'rgba(255,77,106,0.12)' },
-  { id: 'communication', name: 'Cross-Functional Comms', desc: 'Working with engineers, PMs, marketing, execs', icon: '💬', color: '#ffc645', glow: 'rgba(255,198,69,0.12)' },
-  { id: 'critique', name: 'Giving & Receiving Feedback', desc: 'Constructive critique, iterating on input', icon: '🔄', color: '#00e5c7', glow: 'rgba(0,229,199,0.12)' },
-  { id: 'facilitation', name: 'Workshop Facilitation', desc: 'Leading sprints, brainstorms, alignment sessions', icon: '🧩', color: '#818cf8', glow: 'rgba(129,140,248,0.12)' },
-  { id: 'negotiation', name: 'Pushback & Negotiation', desc: 'Advocating for users, defending decisions', icon: '🛡', color: '#a78bfa', glow: 'rgba(167,139,250,0.12)' },
-  { id: 'timemanagement', name: 'Time & Project Mgmt', desc: 'Scoping, deadlines, managing ambiguity', icon: '⏱', color: '#f472b6', glow: 'rgba(244,114,182,0.12)' },
+  { id: 'presentation', name: 'Presenting & Storytelling', desc: 'Pitching ideas, presenting to stakeholders', icon: '\uD83C\uDF99', color: '#ff4d6a', glow: 'rgba(255,77,106,0.12)' },
+  { id: 'communication', name: 'Cross-Functional Comms', desc: 'Working with engineers, PMs, marketing, execs', icon: '\uD83D\uDCAC', color: '#ffc645', glow: 'rgba(255,198,69,0.12)' },
+  { id: 'critique', name: 'Giving & Receiving Feedback', desc: 'Constructive critique, iterating on input', icon: '\uD83D\uDD04', color: '#00e5c7', glow: 'rgba(0,229,199,0.12)' },
+  { id: 'facilitation', name: 'Workshop Facilitation', desc: 'Leading sprints, brainstorms, alignment sessions', icon: '\uD83E\uDDE9', color: '#818cf8', glow: 'rgba(129,140,248,0.12)' },
+  { id: 'negotiation', name: 'Pushback & Negotiation', desc: 'Advocating for users, defending decisions', icon: '\uD83D\uDEE1', color: '#a78bfa', glow: 'rgba(167,139,250,0.12)' },
+  { id: 'timemanagement', name: 'Time & Project Mgmt', desc: 'Scoping, deadlines, managing ambiguity', icon: '\u23F1', color: '#f472b6', glow: 'rgba(244,114,182,0.12)' },
 ];
 
 const PROFESSIONAL_ASSETS = [
@@ -412,7 +477,7 @@ const PROFESSIONAL_ASSETS = [
 ];
 
 const ASSET_STATUSES = [
-  { id: 'none', label: "Don't have", color: '#3d4162', glow: 'transparent' },
+  { id: 'none', label: "Don't have", color: 'var(--text-muted)', glow: 'transparent' },
   { id: 'outdated', label: 'Outdated', color: '#ff8a4d', glow: 'rgba(255,138,77,0.1)' },
   { id: 'wip', label: 'In Progress', color: '#ffc645', glow: 'rgba(255,198,69,0.1)' },
   { id: 'ready', label: 'Up to Date', color: '#4ddb6a', glow: 'rgba(77,219,106,0.1)' },
@@ -424,7 +489,7 @@ const EXPERIENCE_ITEMS = [
   { id: 'product_team', title: 'Product Team Experience', sub: 'In-house with cross-functional teams', color: '#ffc645', glow: 'rgba(255,198,69,0.08)' },
   { id: 'enterprise', title: 'Enterprise / Complex Systems', sub: 'B2B, internal tools, healthcare, fintech', color: '#00e5c7', glow: 'rgba(0,229,199,0.08)' },
   { id: 'consumer', title: 'Consumer / B2C Products', sub: 'Consumer apps, e-commerce, social', color: '#38bdf8', glow: 'rgba(56,189,248,0.08)' },
-  { id: 'zero_to_one', title: '0 → 1 Product Work', sub: 'Built from concept to launch', color: '#818cf8', glow: 'rgba(129,140,248,0.08)' },
+  { id: 'zero_to_one', title: '0 \u2192 1 Product Work', sub: 'Built from concept to launch', color: '#818cf8', glow: 'rgba(129,140,248,0.08)' },
   { id: 'redesign', title: 'Major Redesign', sub: 'Led a significant product overhaul', color: '#a78bfa', glow: 'rgba(167,139,250,0.08)' },
   { id: 'mentored', title: 'Mentored Others', sub: 'Guided juniors, interns, career switchers', color: '#f472b6', glow: 'rgba(244,114,182,0.08)' },
   { id: 'speaking', title: 'Public Speaking / Teaching', sub: 'Talks, workshops, courses, conferences', color: '#4ddb6a', glow: 'rgba(77,219,106,0.08)' },
@@ -432,12 +497,12 @@ const EXPERIENCE_ITEMS = [
 ];
 
 const ARCHETYPES = [
-  { name: 'The Researcher', color: '#ff4d6a', glow: 'rgba(255,77,106,0.08)', focus: 'Deep in discovery — insight & evidence', peaks: ['research', 'strategy', 'accessibility'] },
+  { name: 'The Researcher', color: '#ff4d6a', glow: 'rgba(255,77,106,0.08)', focus: 'Deep in discovery \u2014 insight & evidence', peaks: ['research', 'strategy', 'accessibility'] },
   { name: 'The Craftsperson', color: '#ffc645', glow: 'rgba(255,198,69,0.08)', focus: 'Pixel-perfect polish, motion & detail', peaks: ['visual', 'craft', 'interaction'] },
-  { name: 'The Architect', color: '#00e5c7', glow: 'rgba(0,229,199,0.08)', focus: 'Systems thinker — scalable foundations', peaks: ['systems', 'ia', 'ops'] },
+  { name: 'The Architect', color: '#00e5c7', glow: 'rgba(0,229,199,0.08)', focus: 'Systems thinker \u2014 scalable foundations', peaks: ['systems', 'ia', 'ops'] },
   { name: 'The Strategist', color: '#818cf8', glow: 'rgba(129,140,248,0.08)', focus: 'Big-picture, design meets business', peaks: ['strategy', 'leadership', 'research'] },
   { name: 'The Generalist', color: '#f472b6', glow: 'rgba(244,114,182,0.08)', focus: 'Adaptable, cross-functional, fills gaps', peaks: [] },
-  { name: 'The Champion', color: '#a78bfa', glow: 'rgba(167,139,250,0.08)', focus: 'Evangelist — teams, culture, buy-in', peaks: ['leadership', 'ops', 'strategy'] },
+  { name: 'The Champion', color: '#a78bfa', glow: 'rgba(167,139,250,0.08)', focus: 'Evangelist \u2014 teams, culture, buy-in', peaks: ['leadership', 'ops', 'strategy'] },
 ];
 
 function getArchetype(scores) {
@@ -456,7 +521,7 @@ function getArchetype(scores) {
   return best;
 }
 
-/* ── COMPONENTS ── */
+/* ── Components ── */
 function RatingDots({ compId, value, color, glow, onRate }) {
   return (
     <div className="rating">
@@ -495,9 +560,9 @@ function RadarChart({ scores, size = 240 }) {
   });
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-      {rings.map((p, i) => <polygon key={i} points={p} fill="none" stroke="#252836" strokeWidth="1" opacity={0.4 + i * 0.1} />)}
-      {ids.map((_, i) => { const a = step * i - Math.PI / 2; return <line key={i} x1={c} y1={c} x2={c + r * Math.cos(a)} y2={c + r * Math.sin(a)} stroke="#252836" strokeWidth="1" />; })}
-      <polygon points={dataPts} fill="url(#rg)" stroke="#ff4d6a" strokeWidth="1.5" opacity="0.85" />
+      {rings.map((p, i) => <polygon key={i} points={p} fill="none" stroke="var(--radar-grid)" strokeWidth="1" opacity={0.5 + i * 0.1} />)}
+      {ids.map((_, i) => { const a = step * i - Math.PI / 2; return <line key={i} x1={c} y1={c} x2={c + r * Math.cos(a)} y2={c + r * Math.sin(a)} stroke="var(--radar-grid)" strokeWidth="1" />; })}
+      <polygon points={dataPts} fill="url(#rg)" stroke="var(--coral)" strokeWidth="1.5" opacity="0.85" />
       {ids.map((id, i) => { const p = pt(i, scores[id] || 0); return scores[id] > 0 ? <circle key={id} cx={p.x} cy={p.y} r="3" fill={COMPETENCIES[i].color} /> : null; })}
       {labels.map((l, i) => <text key={i} x={l.x} y={l.y} textAnchor="middle" dominantBaseline="middle" fill={l.color} fontSize="7" fontFamily="Space Mono, monospace" opacity="0.6">{l.t}</text>)}
       <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#ff4d6a" stopOpacity="0.2" /><stop offset="50%" stopColor="#a78bfa" stopOpacity="0.1" /><stop offset="100%" stopColor="#00e5c7" stopOpacity="0.15" /></linearGradient></defs>
@@ -510,19 +575,19 @@ function ProgressRing({ pct, color, size = 100 }) {
   const offset = circ - (pct / 100) * circ;
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#1e2133" strokeWidth={stroke} />
-      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color || '#ff4d6a'} strokeWidth={stroke}
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--ring-track)" strokeWidth={stroke} />
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color || 'var(--coral)'} strokeWidth={stroke}
         strokeDasharray={circ} strokeDashoffset={offset} strokeLinecap="round"
         transform={`rotate(-90 ${size/2} ${size/2})`} style={{ transition: 'stroke-dashoffset 0.6s ease' }} />
       <text x={size/2} y={size/2 - 6} textAnchor="middle" dominantBaseline="middle"
-        fill={color || '#ff4d6a'} fontFamily="Bebas Neue, sans-serif" fontSize="28">{pct}</text>
+        fill={color || 'var(--coral)'} fontFamily="Bebas Neue, sans-serif" fontSize="28">{pct}</text>
       <text x={size/2} y={size/2 + 12} textAnchor="middle" dominantBaseline="middle"
-        fill="#3d4162" fontFamily="Space Mono, monospace" fontSize="8">/ 100</text>
+        fill="var(--text-muted)" fontFamily="Space Mono, monospace" fontSize="8">/ 100</text>
     </svg>
   );
 }
 
-/* ── RESULTS PANEL (reused in sidebar + mobile) ── */
+/* ── Results Panel ── */
 function ResultsPanel({ name, careerLevel, compScores, softScores, assetStatuses, experienceChecks, onReset }) {
   const compTotal = Object.values(compScores).reduce((a, b) => a + b, 0);
   const softTotal = Object.values(softScores).reduce((a, b) => a + b, 0);
@@ -538,10 +603,10 @@ function ResultsPanel({ name, careerLevel, compScores, softScores, assetStatuses
   const allCompRated = compRated === COMPETENCIES.length;
 
   const sections = [
-    { label: 'Competencies', score: compTotal, max: 50, color: '#ff4d6a' },
-    { label: 'Soft Skills', score: softTotal, max: 30, color: '#ffc645' },
-    { label: 'Prof. Assets', score: assetScore, max: 30, color: '#00e5c7' },
-    { label: 'Experience', score: expCount * 2, max: 20, color: '#a78bfa' },
+    { label: 'Competencies', score: compTotal, max: 50, color: 'var(--coral)' },
+    { label: 'Soft Skills', score: softTotal, max: 30, color: 'var(--amber)' },
+    { label: 'Prof. Assets', score: assetScore, max: 30, color: 'var(--teal)' },
+    { label: 'Experience', score: expCount * 2, max: 20, color: 'var(--purple)' },
   ];
 
   const growthAreas = [
@@ -554,7 +619,6 @@ function ResultsPanel({ name, careerLevel, compScores, softScores, assetStatuses
       <div className="rp-gradient-bar" />
       <div className="rp-tag">Your Full Assessment</div>
 
-      {/* Name + career */}
       {name && <div style={{ textAlign: 'center', fontWeight: 600, fontSize: 16, marginBottom: 8 }}>{name}</div>}
       {careerLevel && (
         <div className="rp-career">
@@ -563,13 +627,11 @@ function ResultsPanel({ name, careerLevel, compScores, softScores, assetStatuses
         </div>
       )}
 
-      {/* Progress ring */}
       <div className="progress-ring-wrap">
-        <ProgressRing pct={pct} color={allCompRated && archetype ? archetype.color : '#ff4d6a'} />
+        <ProgressRing pct={pct} color={allCompRated && archetype ? archetype.color : undefined} />
         <div className="progress-ring-label">{grandTotal} / {grandMax} points</div>
       </div>
 
-      {/* Archetype */}
       <div className="rp-archetype">
         {allCompRated && archetype ? (
           <>
@@ -583,7 +645,6 @@ function ResultsPanel({ name, careerLevel, compScores, softScores, assetStatuses
         )}
       </div>
 
-      {/* Section stats */}
       <div className="rp-stats">
         {sections.map(s => (
           <div className="rp-stat" key={s.label}>
@@ -593,12 +654,8 @@ function ResultsPanel({ name, careerLevel, compScores, softScores, assetStatuses
         ))}
       </div>
 
-      {/* Radar */}
-      {compRated > 0 && (
-        <div className="rp-radar"><RadarChart scores={compScores} size={240} /></div>
-      )}
+      {compRated > 0 && <div className="rp-radar"><RadarChart scores={compScores} size={240} /></div>}
 
-      {/* Competency + Soft bars */}
       <div className="rp-section-title">Skill Breakdown</div>
       {[...COMPETENCIES.map(c => ({ label: c.name, score: compScores[c.id] || 0, color: c.color })),
         ...SOFT_SKILLS.map(s => ({ label: s.name, score: softScores[s.id] || 0, color: s.color }))
@@ -608,38 +665,35 @@ function ResultsPanel({ name, careerLevel, compScores, softScores, assetStatuses
           <div className="rp-bar-track">
             <div className="rp-bar-fill" style={{ width: `${(row.score / 5) * 100}%`, background: row.color, opacity: row.score ? 0.8 : 0.1 }} />
           </div>
-          <span className="rp-bar-val" style={{ color: row.score ? row.color : 'var(--text-muted)' }}>{row.score || '—'}</span>
+          <span className="rp-bar-val" style={{ color: row.score ? row.color : 'var(--text-muted)' }}>{row.score || '\u2014'}</span>
         </div>
       ))}
 
-      {/* Professional Assets Summary */}
       <div className="rp-section-title">Professional Presence</div>
       {PROFESSIONAL_ASSETS.map(a => {
         const st = assetStatuses[a.id] || 'none';
         const stObj = ASSET_STATUSES.find(s => s.id === st);
         return (
           <div className="rp-asset-row" key={a.id}>
-            <div className="rp-asset-dot" style={{ background: st !== 'none' ? stObj.color : '#252836' }} />
+            <div className="rp-asset-dot" style={{ background: st !== 'none' ? stObj.color : 'var(--border)' }} />
             <span className="rp-asset-name">{a.title}</span>
-            <span className="rp-asset-status" style={{ color: stObj.color }}>{st === 'none' ? '—' : stObj.label}</span>
+            <span className="rp-asset-status" style={{ color: stObj.color }}>{st === 'none' ? '\u2014' : stObj.label}</span>
           </div>
         );
       })}
 
-      {/* Growth */}
       {(compRated > 0 || Object.values(softScores).some(v => v > 0)) && (
         <>
           <div className="rp-section-title">Top Growth Areas</div>
           {growthAreas.map(g => (
             <div className="rp-growth-item" key={g.name}>
               <div className="rp-growth-name" style={{ color: g.color }}>{g.name}</div>
-              <div className="rp-growth-score">{g.sec} · {g.score}/5</div>
+              <div className="rp-growth-score">{g.sec} \u00B7 {g.score}/5</div>
             </div>
           ))}
         </>
       )}
 
-      {/* Archetype legend */}
       <div className="rp-section-title">All Archetypes</div>
       <div className="rp-arch-grid">
         {ARCHETYPES.map(arch => {
@@ -648,7 +702,7 @@ function ResultsPanel({ name, careerLevel, compScores, softScores, assetStatuses
             <div key={arch.name} className={`rp-arch-card${isMatch ? ' matched' : ''}`}
               style={{ '--m-color': arch.color + '50', '--m-glow': arch.glow }}>
               <div className="rp-arch-card-name" style={{ color: isMatch ? arch.color : 'var(--text)' }}>
-                {arch.name} {isMatch && '←'}
+                {arch.name} {isMatch && '\u2190'}
               </div>
               <div className="rp-arch-card-focus">{arch.focus}</div>
             </div>
@@ -663,13 +717,13 @@ function ResultsPanel({ name, careerLevel, compScores, softScores, assetStatuses
 
       <div className="footer">
         <div className="footer-logo">Jacksonville Design Community</div>
-        <div className="footer-sub">UX Assessment · {new Date().getFullYear()}</div>
+        <div className="footer-sub">UX Assessment \u00B7 {new Date().getFullYear()}</div>
       </div>
     </div>
   );
 }
 
-/* ── APP ── */
+/* ── App ── */
 function App() {
   const [name, setName] = useState('');
   const [careerLevel, setCareerLevel] = useState(null);
@@ -694,12 +748,11 @@ function App() {
 
   return (
     <div className="shell">
-      {/* LEFT: INPUT FORM */}
       <div className="main">
         <div className="header">
           <div className="tag">Workshop Activity</div>
           <h1>UX DESIGNER<span>SCORECARD</span></h1>
-          <p className="subtitle">Comprehensive self-assessment across craft, career, presence, and experience. Be honest — this is for you.</p>
+          <p className="subtitle">Comprehensive self-assessment across craft, career, presence, and experience. Be honest \u2014 this is for you.</p>
         </div>
 
         <div className="meta-row">
@@ -712,10 +765,7 @@ function App() {
         <div className="section">
           <div className="section-header">
             <div className="section-num" style={{ background: 'var(--coral-glow)', color: 'var(--coral)' }}>01</div>
-            <div>
-              <div className="section-title">Career Stage</div>
-              <div className="section-subtitle">Where are you on the design career ladder?</div>
-            </div>
+            <div><div className="section-title">Career Stage</div><div className="section-subtitle">Where are you on the design career ladder?</div></div>
           </div>
           <div className="ladder">
             {CAREER_LEVELS.map(l => (
@@ -731,10 +781,7 @@ function App() {
         <div className="section">
           <div className="section-header">
             <div className="section-num" style={{ background: 'var(--amber-glow)', color: 'var(--amber)' }}>02</div>
-            <div>
-              <div className="section-title">Core Competencies</div>
-              <div className="section-subtitle">Rate your skill level — 1 (novice) to 5 (expert)</div>
-            </div>
+            <div><div className="section-title">Core Competencies</div><div className="section-subtitle">Rate your skill level \u2014 1 (novice) to 5 (expert)</div></div>
           </div>
           <div className="card-grid">
             {COMPETENCIES.map((comp, idx) => {
@@ -757,10 +804,7 @@ function App() {
         <div className="section">
           <div className="section-header">
             <div className="section-num" style={{ background: 'var(--teal-glow)', color: 'var(--teal)' }}>03</div>
-            <div>
-              <div className="section-title">Soft Skills & Communication</div>
-              <div className="section-subtitle">The human skills that separate good from great</div>
-            </div>
+            <div><div className="section-title">Soft Skills & Communication</div><div className="section-subtitle">The human skills that separate good from great</div></div>
           </div>
           <div className="card-grid">
             {SOFT_SKILLS.map((skill, idx) => {
@@ -783,21 +827,14 @@ function App() {
         <div className="section">
           <div className="section-header">
             <div className="section-num" style={{ background: 'var(--sky-glow)', color: 'var(--sky)' }}>04</div>
-            <div>
-              <div className="section-title">Professional Presence</div>
-              <div className="section-subtitle">Resume, portfolio, online presence & assets</div>
-            </div>
+            <div><div className="section-title">Professional Presence</div><div className="section-subtitle">Resume, portfolio, online presence & assets</div></div>
           </div>
           <div className="checklist">
             {PROFESSIONAL_ASSETS.map(asset => {
               const status = assetStatuses[asset.id] || 'none';
               return (
                 <div key={asset.id} className="check-item"
-                  style={{
-                    borderColor: status !== 'none' ? asset.color + '30' : undefined,
-                    background: status !== 'none' ? asset.glow : undefined,
-                    cursor: 'default',
-                  }}>
+                  style={{ borderColor: status !== 'none' ? asset.color + '30' : undefined, background: status !== 'none' ? asset.glow : undefined, cursor: 'default' }}>
                   <div className="check-text">
                     <div className="check-title" style={{ color: status !== 'none' ? asset.color : undefined }}>{asset.title}</div>
                     <div className="check-sub">{asset.sub}</div>
@@ -821,10 +858,7 @@ function App() {
         <div className="section">
           <div className="section-header">
             <div className="section-num" style={{ background: 'var(--purple-glow)', color: 'var(--purple)' }}>05</div>
-            <div>
-              <div className="section-title">Experience & Track Record</div>
-              <div className="section-subtitle">Check everything you've done</div>
-            </div>
+            <div><div className="section-title">Experience & Track Record</div><div className="section-subtitle">Check everything you've done</div></div>
           </div>
           <div className="checklist">
             {EXPERIENCE_ITEMS.map(item => {
@@ -833,7 +867,7 @@ function App() {
                 <div key={item.id} className={`check-item${checked ? ' checked' : ''}`}
                   style={{ '--check-color': item.color, '--check-glow': item.glow }}
                   onClick={() => handleExpToggle(item.id)}>
-                  <div className="checkbox"><span className="checkmark">✓</span></div>
+                  <div className="checkbox"><span className="checkmark">{'\u2713'}</span></div>
                   <div className="check-text">
                     <div className="check-title">{item.title}</div>
                     <div className="check-sub">{item.sub}</div>
@@ -844,16 +878,10 @@ function App() {
           </div>
         </div>
 
-        {/* Mobile results (below form on small screens) */}
-        <div className="mobile-results">
-          <ResultsPanel {...resultsProps} />
-        </div>
+        <div className="mobile-results"><ResultsPanel {...resultsProps} /></div>
       </div>
 
-      {/* RIGHT: STICKY SIDEBAR RESULTS */}
-      <div className="sidebar">
-        <ResultsPanel {...resultsProps} />
-      </div>
+      <div className="sidebar"><ResultsPanel {...resultsProps} /></div>
     </div>
   );
 }
