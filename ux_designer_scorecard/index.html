@@ -389,12 +389,17 @@
   }
 
   @media print {
-    .grain, .theme-toggle { display: none; }
+    .grain, .theme-toggle, .btn, .footer { display: none; }
     .shell { display: block; }
     .sidebar { display: none; }
     .mobile-results { display: block !important; }
     .main { max-width: 100%; padding: 20px; }
     .card, .check-item, .rp-stat, .rp-arch-card, .rp-growth-item { break-inside: avoid; }
+    .main > .section ~ .section ~ .section { break-before: page; }
+    .mobile-results { break-before: page; padding-top: 40px; height: auto !important; min-height: 0 !important; }
+    #radar-embed-container { break-before: page; padding-top: 40px; padding-bottom: 0; margin-bottom: 0; }
+    #radar-print-inline #root { min-height: 0 !important; height: auto !important; }
+    .section { padding-top: 32px; }
     .dot.filled, .ladder-btn.selected, .status-btn.active, .check-item.checked { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   }
 </style>
@@ -432,6 +437,15 @@
   toggle.addEventListener('click', function() {
     const current = document.documentElement.getAttribute('data-theme');
     setTheme(current === 'dark' ? 'light' : 'dark');
+  });
+
+  // Force light mode for printing, restore original theme after
+  window.addEventListener('beforeprint', function() {
+    window._themBeforePrint = document.documentElement.getAttribute('data-theme');
+    setTheme('light');
+  });
+  window.addEventListener('afterprint', function() {
+    if (window._themBeforePrint) setTheme(window._themBeforePrint);
   });
 </script>
 
@@ -914,9 +928,9 @@ ReactDOM.createRoot(document.getElementById('app')).render(<App />);
   <script>
     const frame = document.getElementById('radar-frame');
     frame.addEventListener('load', function() {
-      // Hide the radar's own theme toggle
+      // Hide the radar's own theme toggle + fix print blank page
       const hideStyle = frame.contentDocument.createElement('style');
-      hideStyle.textContent = '.theme-toggle { display: none !important; }';
+      hideStyle.textContent = `.theme-toggle { display: none !important; }`;
       frame.contentDocument.head.appendChild(hideStyle);
 
       // Sync theme into iframe on load
@@ -935,6 +949,71 @@ ReactDOM.createRoot(document.getElementById('app')).render(<App />);
       // Re-check after fonts/D3 finish rendering
       setTimeout(resize, 500);
       setTimeout(resize, 1500);
+    });
+
+    // Before printing: clone the live rendered DOM out of the iframe into the page
+    window.addEventListener('beforeprint', function() {
+      if (!frame.contentDocument) return;
+
+      // Inject radar's styles into parent head (scoped, will be removed after print)
+      frame.contentDocument.querySelectorAll('style').forEach(function(s) {
+        const ns = document.createElement('style');
+        ns.setAttribute('data-radar-print', '');
+        // Skip rules that would clobber the parent body background
+        ns.textContent = s.textContent.replace(/body\s*\{[^}]*background[^}]*\}/g, '');
+        document.head.appendChild(ns);
+      });
+
+      // Clone the rendered content and insert after the (now hidden) iframe
+      const root = frame.contentDocument.getElementById('root');
+      if (root) {
+        const clonedRoot = root.cloneNode(true);
+        clonedRoot.style.minHeight = '0';
+        clonedRoot.style.height = 'auto';
+        // The radar's App div has minHeight:"100vh" as inline style — strip it
+        const inner = clonedRoot.firstElementChild;
+        if (inner) {
+          inner.style.minHeight = '0';
+          inner.style.overflow = 'visible';
+          // Remove fixed-position decorative elements (glows, grain) — not needed for print
+          Array.from(inner.children).forEach(function(child) {
+            if (child.style && child.style.position === 'fixed') child.remove();
+          });
+          // Reduce content wrapper bottom padding (was 60px — DOM uses kebab-case z-index)
+          const wrapper = inner.querySelector('[style*="z-index"]') || inner.lastElementChild;
+          if (wrapper) {
+            wrapper.style.paddingTop = '16px';
+            wrapper.style.paddingBottom = '8px';
+            // Reduce header margin
+            const header = wrapper.firstElementChild;
+            if (header) header.style.marginBottom = '12px';
+            // Compact the flex row gap (left + right panels)
+            const row = wrapper.children[1];
+            if (row) row.style.gap = '24px';
+            // Compact left panel: reduce gap between sections
+            const leftPanel = row && row.firstElementChild;
+            if (leftPanel) {
+              leftPanel.style.gap = '12px';
+              Array.from(leftPanel.children).forEach(function(section) {
+                section.style.marginBottom = '0';
+              });
+            }
+          }
+        }
+        const div = document.createElement('div');
+        div.id = 'radar-print-inline';
+        div.appendChild(clonedRoot);
+        frame.insertAdjacentElement('afterend', div);
+      }
+
+      frame.style.display = 'none';
+    });
+
+    window.addEventListener('afterprint', function() {
+      const div = document.getElementById('radar-print-inline');
+      if (div) div.remove();
+      document.querySelectorAll('[data-radar-print]').forEach(function(s) { s.remove(); });
+      frame.style.display = 'block';
     });
   </script>
 </div>

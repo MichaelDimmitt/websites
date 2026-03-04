@@ -36,7 +36,11 @@
     box-shadow: 0 1px 4px rgba(0,0,0,0.15);
   }
 
-  @media print { .theme-toggle { display: none; } }
+  @media print {
+    .theme-toggle { display: none; }
+    html, body, #root { min-height: 0 !important; height: auto !important; background: transparent !important; }
+    body { margin: 0 !important; padding: 0 !important; background: transparent !important; }
+  }
 </style>
 </head>
 <body>
