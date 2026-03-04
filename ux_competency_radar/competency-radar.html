@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Designer's Compass — Competency Radar</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,200;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,200&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body, #root { min-height: 100vh; }
+  body { background: #0B0B0F; transition: background 0.5s ease; }
+  html[data-theme="light"] body { background: #F2F3F7; }
+
+  /* Toggle */
+  .theme-toggle {
+    position: fixed; top: 16px; right: 16px; z-index: 200;
+    width: 56px; height: 28px; border-radius: 14px; cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06);
+    transition: all 0.4s ease; display: flex; align-items: center; padding: 0 3px;
+  }
+  html[data-theme="light"] .theme-toggle {
+    border-color: rgba(0,0,0,0.12); background: rgba(0,0,0,0.06);
+  }
+  .theme-toggle .knob {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #fff; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; transition: all 0.4s cubic-bezier(0.68,-0.55,0.27,1.55);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+  html[data-theme="light"] .theme-toggle .knob {
+    transform: translateX(28px); background: #1a1a2e;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  }
+
+  @media print { .theme-toggle { display: none; } }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, useMemo } = React;
+
+const COMPETENCIES = [
+  "Strategic Thinking",
+  "Business Acumen",
+  "Stakeholder Influence",
+  "Craft Mastery",
+  "User Empathy",
+  "Communication & Story",
+  "Team Development",
+  "Systems Thinking",
+  "Innovation",
+  "Execution & Delivery",
+];
+
+const ARCHETYPES = {
+  storyteller: {
+    name: "Experience Storyteller",
+    sub: "Disney \u00b7 Pixar \u00b7 Immersive",
+    color: "#FF3C64",
+    colorLight: "#D92B52",
+    glow: "rgba(255,60,100,0.3)",
+    glowLight: "rgba(217,43,82,0.15)",
+  },
+  systems: {
+    name: "Systems Architect",
+    sub: "Enterprise \u00b7 Fintech \u00b7 Data",
+    color: "#00D4FF",
+    colorLight: "#0099CC",
+    glow: "rgba(0,212,255,0.3)",
+    glowLight: "rgba(0,153,204,0.12)",
+  },
+  brand: {
+    name: "Brand Worldbuilder",
+    sub: "Agencies \u00b7 Startups \u00b7 Luxury",
+    color: "#FFB800",
+    colorLight: "#CC9200",
+    glow: "rgba(255,184,0,0.3)",
+    glowLight: "rgba(204,146,0,0.12)",
+  },
+  interaction: {
+    name: "Interaction Crafter",
+    sub: "Product \u00b7 Design Systems",
+    color: "#A855F7",
+    colorLight: "#8B3DD4",
+    glow: "rgba(168,85,247,0.3)",
+    glowLight: "rgba(139,61,212,0.12)",
+  },
+  service: {
+    name: "Service Designer",
+    sub: "Gov \u00b7 Healthcare \u00b7 Consulting",
+    color: "#34D399",
+    colorLight: "#1BA87A",
+    glow: "rgba(52,211,153,0.3)",
+    glowLight: "rgba(27,168,122,0.12)",
+  },
+  strategist: {
+    name: "Research Strategist",
+    sub: "R&D \u00b7 Innovation \u00b7 Policy",
+    color: "#F472B6",
+    colorLight: "#D44D95",
+    glow: "rgba(244,114,182,0.3)",
+    glowLight: "rgba(212,77,149,0.12)",
+  },
+  technologist: {
+    name: "Creative Technologist",
+    sub: "Labs \u00b7 Installations \u00b7 Experimental",
+    color: "#FB923C",
+    colorLight: "#D4741E",
+    glow: "rgba(251,146,60,0.3)",
+    glowLight: "rgba(212,116,30,0.12)",
+  },
+};
+
+const LEVELS = {
+  junior: "Designer I\u2013II",
+  senior: "Senior Designer",
+  staff: "Staff Designer",
+  principal: "Principal / Director",
+  fellow: "Fellow / Sr. Director",
+};
+
+const DATA = {
+  storyteller: {
+    junior:    [2, 1, 2, 5, 7, 5, 1, 2, 4, 5],
+    senior:    [4, 3, 4, 8, 8, 7, 3, 3, 6, 7],
+    staff:     [5, 4, 6, 9, 9, 8, 5, 5, 7, 8],
+    principal: [7, 6, 8, 9, 8, 9, 6, 6, 8, 7],
+    fellow:    [9, 7, 9, 10, 8, 10, 7, 7, 9, 7],
+  },
+  systems: {
+    junior:    [2, 2, 1, 4, 4, 3, 1, 5, 3, 5],
+    senior:    [5, 5, 4, 7, 6, 5, 3, 8, 4, 7],
+    staff:     [7, 6, 6, 8, 6, 7, 4, 9, 5, 8],
+    principal: [8, 8, 8, 8, 6, 8, 6, 10, 5, 8],
+    fellow:    [9, 9, 9, 8, 7, 9, 7, 10, 6, 8],
+  },
+  brand: {
+    junior:    [2, 2, 2, 6, 4, 5, 1, 2, 6, 4],
+    senior:    [4, 4, 5, 8, 5, 7, 2, 3, 8, 6],
+    staff:     [6, 5, 7, 9, 6, 8, 4, 4, 9, 7],
+    principal: [7, 7, 8, 9, 6, 9, 6, 5, 9, 7],
+    fellow:    [9, 8, 9, 10, 7, 10, 7, 6, 9, 7],
+  },
+  interaction: {
+    junior:    [1, 1, 1, 7, 5, 3, 1, 3, 5, 6],
+    senior:    [3, 3, 3, 9, 7, 5, 2, 5, 7, 8],
+    staff:     [4, 4, 5, 10, 7, 6, 4, 7, 8, 9],
+    principal: [6, 5, 7, 10, 7, 7, 6, 8, 8, 9],
+    fellow:    [7, 6, 8, 10, 8, 8, 7, 9, 9, 8],
+  },
+  service: {
+    junior:    [3, 2, 2, 3, 6, 4, 1, 4, 3, 4],
+    senior:    [5, 5, 5, 5, 8, 6, 3, 7, 4, 6],
+    staff:     [7, 6, 7, 6, 9, 8, 5, 8, 5, 7],
+    principal: [8, 8, 8, 6, 9, 9, 7, 9, 6, 7],
+    fellow:    [9, 9, 9, 7, 9, 10, 8, 10, 7, 7],
+  },
+  strategist: {
+    junior:    [3, 2, 2, 2, 7, 4, 1, 3, 4, 3],
+    senior:    [6, 4, 5, 4, 9, 6, 2, 5, 6, 5],
+    staff:     [7, 6, 7, 5, 9, 8, 4, 7, 7, 6],
+    principal: [9, 7, 8, 5, 9, 9, 6, 8, 8, 6],
+    fellow:    [10, 8, 9, 6, 10, 10, 7, 9, 9, 6],
+  },
+  technologist: {
+    junior:    [1, 1, 1, 6, 3, 2, 1, 3, 7, 6],
+    senior:    [3, 2, 3, 8, 5, 4, 2, 5, 9, 8],
+    staff:     [4, 3, 5, 9, 5, 6, 3, 6, 9, 9],
+    principal: [6, 5, 6, 9, 6, 7, 5, 7, 10, 9],
+    fellow:    [7, 6, 7, 9, 7, 8, 6, 8, 10, 9],
+  },
+};
+
+/* ── THEME HELPERS ── */
+function t(isDark, dark, light) { return isDark ? dark : light; }
+
+function RoseChart({ data, color, glow, compareData, compareColor, compareGlow, size, isDark }) {
+  const svgRef = useRef(null);
+  const prevDataRef = useRef(data);
+  const prevCompareRef = useRef(compareData);
+
+  useEffect(() => {
+    if (!svgRef.current) return;
+    const svg = d3.select(svgRef.current);
+    svg.selectAll("*").remove();
+
+    const cx = size / 2;
+    const cy = size / 2;
+    const maxR = size * 0.38;
+    const n = COMPETENCIES.length;
+    const angleSlice = (Math.PI * 2) / n;
+
+    const g = svg.append("g").attr("transform", `translate(${cx},${cy})`);
+
+    /* Grid colors based on theme */
+    const gridStroke = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.07)";
+    const gridStrokeOuter = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.12)";
+    const axisStroke = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)";
+    const labelFill = isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)";
+    const dotCenter = isDark ? "#fff" : "#fff";
+
+    const rings = [2, 4, 6, 8, 10];
+    rings.forEach((r) => {
+      const radius = (r / 10) * maxR;
+      g.append("circle")
+        .attr("r", radius)
+        .attr("fill", "none")
+        .attr("stroke", r === 10 ? gridStrokeOuter : gridStroke)
+        .attr("stroke-width", r === 10 ? 1.5 : 0.5);
+    });
+
+    COMPETENCIES.forEach((comp, i) => {
+      const angle = angleSlice * i - Math.PI / 2;
+      const x2 = Math.cos(angle) * maxR;
+      const y2 = Math.sin(angle) * maxR;
+
+      g.append("line")
+        .attr("x1", 0).attr("y1", 0)
+        .attr("x2", x2).attr("y2", y2)
+        .attr("stroke", axisStroke)
+        .attr("stroke-width", 0.5);
+
+      const labelR = maxR + 18;
+      const lx = Math.cos(angle) * labelR;
+      const ly = Math.sin(angle) * labelR;
+
+      const text = g.append("text")
+        .attr("x", lx).attr("y", ly)
+        .attr("text-anchor", "middle")
+        .attr("dominant-baseline", "middle")
+        .attr("fill", labelFill)
+        .attr("font-size", size < 500 ? "9px" : "10.5px")
+        .attr("font-family", "'DM Sans', sans-serif")
+        .attr("font-weight", 400)
+        .attr("letter-spacing", "0.02em");
+
+      const words = comp.split(" ");
+      if (words.length <= 2) {
+        text.text(comp);
+      } else {
+        const mid = Math.ceil(words.length / 2);
+        text.append("tspan").attr("x", lx).attr("dy", "-0.4em").text(words.slice(0, mid).join(" "));
+        text.append("tspan").attr("x", lx).attr("dy", "1.15em").text(words.slice(mid).join(" "));
+      }
+    });
+
+    const rosePath = (values) => {
+      const points = values.map((v, i) => {
+        const angle = angleSlice * i - Math.PI / 2;
+        const r = (v / 10) * maxR;
+        return [Math.cos(angle) * r, Math.sin(angle) * r];
+      });
+      points.push(points[0]);
+
+      let path = `M${points[0][0]},${points[0][1]}`;
+      for (let i = 0; i < points.length - 1; i++) {
+        const curr = points[i];
+        const next = points[(i + 1) % points.length];
+        const cpx = (curr[0] + next[0]) / 2;
+        const cpy = (curr[1] + next[1]) / 2;
+        path += `Q${curr[0]},${curr[1]} ${cpx},${cpy}`;
+      }
+      path += "Z";
+      return path;
+    };
+
+    const animatePath = (selection, fromData, toData) => {
+      const fromValues = fromData || toData.map(() => 0);
+      selection
+        .attr("d", rosePath(fromValues))
+        .transition()
+        .duration(800)
+        .ease(d3.easeCubicOut)
+        .attrTween("d", () => {
+          const interp = fromValues.map((from, i) => d3.interpolate(from, toData[i]));
+          return (t) => rosePath(interp.map((fn) => fn(t)));
+        });
+    };
+
+    if (compareData) {
+      const compareGlowFilter = g.append("defs").append("filter").attr("id", "compareGlow");
+      compareGlowFilter.append("feGaussianBlur").attr("stdDeviation", "6").attr("result", "blur");
+      compareGlowFilter.append("feComposite").attr("in", "SourceGraphic").attr("in2", "blur");
+
+      const compareShape = g.append("path")
+        .attr("fill", compareColor)
+        .attr("fill-opacity", isDark ? 0.08 : 0.1)
+        .attr("stroke", compareColor)
+        .attr("stroke-width", 1.5)
+        .attr("stroke-opacity", isDark ? 0.5 : 0.6)
+        .attr("filter", "url(#compareGlow)")
+        .style("stroke-dasharray", "6,4");
+
+      animatePath(compareShape, prevCompareRef.current, compareData);
+
+      compareData.forEach((v, i) => {
+        const angle = angleSlice * i - Math.PI / 2;
+        const r = (v / 10) * maxR;
+        g.append("circle")
+          .attr("cx", Math.cos(angle) * r)
+          .attr("cy", Math.sin(angle) * r)
+          .attr("r", 3)
+          .attr("fill", compareColor)
+          .attr("fill-opacity", 0)
+          .transition()
+          .delay(400 + i * 40)
+          .duration(400)
+          .attr("fill-opacity", 0.7);
+      });
+    }
+
+    const glowFilter = g.append("defs").append("filter").attr("id", "mainGlow");
+    glowFilter.append("feGaussianBlur").attr("stdDeviation", "8").attr("result", "blur");
+    glowFilter.append("feComposite").attr("in", "SourceGraphic").attr("in2", "blur");
+
+    const glowShape = g.append("path")
+      .attr("fill", color)
+      .attr("fill-opacity", isDark ? 0.12 : 0.08)
+      .attr("stroke", "none")
+      .attr("filter", "url(#mainGlow)");
+    animatePath(glowShape, prevDataRef.current, data);
+
+    const mainShape = g.append("path")
+      .attr("fill", color)
+      .attr("fill-opacity", isDark ? 0.15 : 0.12)
+      .attr("stroke", color)
+      .attr("stroke-width", 2)
+      .attr("stroke-opacity", isDark ? 0.9 : 0.8);
+    animatePath(mainShape, prevDataRef.current, data);
+
+    data.forEach((v, i) => {
+      const angle = angleSlice * i - Math.PI / 2;
+      const r = (v / 10) * maxR;
+
+      g.append("circle")
+        .attr("cx", Math.cos(angle) * r)
+        .attr("cy", Math.sin(angle) * r)
+        .attr("r", 6)
+        .attr("fill", color)
+        .attr("fill-opacity", 0)
+        .transition().delay(400 + i * 50).duration(400)
+        .attr("fill-opacity", 0.25);
+
+      g.append("circle")
+        .attr("cx", Math.cos(angle) * r)
+        .attr("cy", Math.sin(angle) * r)
+        .attr("r", 3.5)
+        .attr("fill", color)
+        .attr("fill-opacity", 0)
+        .transition().delay(400 + i * 50).duration(400)
+        .attr("fill-opacity", 1);
+
+      g.append("circle")
+        .attr("cx", Math.cos(angle) * r)
+        .attr("cy", Math.sin(angle) * r)
+        .attr("r", 1.5)
+        .attr("fill", dotCenter)
+        .attr("fill-opacity", 0)
+        .transition().delay(500 + i * 50).duration(300)
+        .attr("fill-opacity", 0.8);
+    });
+
+    data.forEach((v, i) => {
+      const angle = angleSlice * i - Math.PI / 2;
+      const r = (v / 10) * maxR + 10;
+      if (v > 0) {
+        g.append("text")
+          .attr("x", Math.cos(angle) * r)
+          .attr("y", Math.sin(angle) * r)
+          .attr("text-anchor", "middle")
+          .attr("dominant-baseline", "middle")
+          .attr("fill", color)
+          .attr("font-size", "10px")
+          .attr("font-family", "'DM Sans', sans-serif")
+          .attr("font-weight", 700)
+          .attr("opacity", 0)
+          .text(v)
+          .transition().delay(600 + i * 50).duration(400)
+          .attr("opacity", 0.8);
+      }
+    });
+
+    prevDataRef.current = data;
+    prevCompareRef.current = compareData;
+  }, [data, color, glow, compareData, compareColor, compareGlow, size, isDark]);
+
+  return <svg ref={svgRef} width={size} height={size} />;
+}
+
+function App() {
+  const [archetype, setArchetype] = useState("storyteller");
+  const [level, setLevel] = useState("senior");
+  const [compareArchetype, setCompareArchetype] = useState(null);
+  const [chartSize, setChartSize] = useState(520);
+  const [isDark, setIsDark] = useState(true);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+  }, [isDark]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRef.current) {
+        const w = containerRef.current.offsetWidth;
+        setChartSize(Math.min(Math.max(w * 0.7, 340), 560));
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const currentData = DATA[archetype][level];
+  const compareData = compareArchetype ? DATA[compareArchetype][level] : null;
+  const arc = ARCHETYPES[archetype];
+  const cmpArc = compareArchetype ? ARCHETYPES[compareArchetype] : null;
+
+  /* Theme-aware colors */
+  const accentColor = isDark ? arc.color : arc.colorLight;
+  const accentGlow = isDark ? arc.glow : arc.glowLight;
+  const cmpColor = cmpArc ? (isDark ? cmpArc.color : cmpArc.colorLight) : null;
+  const cmpGlow = cmpArc ? (isDark ? cmpArc.glow : cmpArc.glowLight) : null;
+
+  const topCompetencies = useMemo(() => {
+    return currentData
+      .map((v, i) => ({ name: COMPETENCIES[i], value: v }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 3);
+  }, [currentData]);
+
+  /* Theme palette */
+  const bg = t(isDark, "#0B0B0F", "#F2F3F7");
+  const text1 = t(isDark, "#fff", "#1a1a2e");
+  const textDim = t(isDark, "rgba(255,255,255,0.55)", "rgba(0,0,0,0.55)");
+  const textMuted = t(isDark, "rgba(255,255,255,0.35)", "rgba(0,0,0,0.35)");
+  const textFaint = t(isDark, "rgba(255,255,255,0.25)", "rgba(0,0,0,0.2)");
+  const textGhost = t(isDark, "rgba(255,255,255,0.3)", "rgba(0,0,0,0.3)");
+  const textSubtle = t(isDark, "rgba(255,255,255,0.4)", "rgba(0,0,0,0.4)");
+  const textMid = t(isDark, "rgba(255,255,255,0.5)", "rgba(0,0,0,0.45)");
+  const textStrong = t(isDark, "rgba(255,255,255,0.7)", "rgba(0,0,0,0.7)");
+  const textWhite = t(isDark, "#fff", "#1a1a2e");
+  const borderLight = t(isDark, "rgba(255,255,255,0.06)", "rgba(0,0,0,0.07)");
+  const borderMed = t(isDark, "rgba(255,255,255,0.08)", "rgba(0,0,0,0.1)");
+  const borderActive = t(isDark, "rgba(255,255,255,0.2)", "rgba(0,0,0,0.2)");
+  const surfaceSoft = t(isDark, "rgba(255,255,255,0.03)", "rgba(0,0,0,0.03)");
+  const surfaceCard = t(isDark, "rgba(255,255,255,0.02)", "rgba(0,0,0,0.03)");
+  const barTrack = t(isDark, "rgba(255,255,255,0.06)", "rgba(0,0,0,0.06)");
+  const textItalic = t(isDark, "rgba(255,255,255,0.2)", "rgba(0,0,0,0.25)");
+  const grainOpacity = isDark ? 0.03 : 0.015;
+
+  return (
+    <div style={{
+      minHeight: "100vh",
+      background: bg,
+      fontFamily: "'DM Sans', sans-serif",
+      color: text1,
+      position: "relative",
+      overflow: "hidden",
+      transition: "background 0.5s ease, color 0.5s ease",
+    }}>
+      {/* Theme toggle */}
+      <div className="theme-toggle" onClick={() => setIsDark(!isDark)} title={isDark ? "Switch to light mode" : "Switch to dark mode"}>
+        <div className="knob">{isDark ? "\u{1F319}" : "\u{2600}\uFE0F"}</div>
+      </div>
+
+      {/* Ambient glows */}
+      <div style={{
+        position: "fixed", top: "-30%", left: "-10%",
+        width: "60%", height: "60%", borderRadius: "50%",
+        background: `radial-gradient(circle, ${accentGlow} 0%, transparent 70%)`,
+        filter: `blur(${isDark ? 80 : 100}px)`, pointerEvents: "none",
+        transition: "background 0.8s ease, filter 0.5s ease",
+        opacity: isDark ? 1 : 0.6,
+      }} />
+      <div style={{
+        position: "fixed", bottom: "-20%", right: "-10%",
+        width: "50%", height: "50%", borderRadius: "50%",
+        background: `radial-gradient(circle, ${cmpGlow || (isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.01)")} 0%, transparent 70%)`,
+        filter: `blur(${isDark ? 80 : 100}px)`, pointerEvents: "none",
+        transition: "background 0.8s ease, filter 0.5s ease",
+        opacity: isDark ? 1 : 0.5,
+      }} />
+
+      {/* Grain */}
+      <div style={{
+        position: "fixed", inset: 0, pointerEvents: "none", opacity: grainOpacity, zIndex: 100,
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+        transition: "opacity 0.5s ease",
+      }} />
+
+      <div style={{ position: "relative", zIndex: 10, maxWidth: 1100, margin: "0 auto", padding: "40px 24px 60px" }}>
+
+        {/* Header */}
+        <div style={{ marginBottom: 40 }}>
+          <h1 style={{
+            fontFamily: "'Syne', sans-serif", fontWeight: 800,
+            fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
+            letterSpacing: "-0.02em", lineHeight: 1,
+            background: `linear-gradient(135deg, ${accentColor}, ${textWhite})`,
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+            transition: "all 0.6s ease", marginBottom: 6,
+          }}>
+            Competency Radar
+          </h1>
+          <p style={{ color: textMuted, fontSize: 13, letterSpacing: "0.15em", fontWeight: 200, textTransform: "uppercase", transition: "color 0.5s" }}>
+            Designer Archetype × Career Level
+          </p>
+        </div>
+
+        <div style={{ display: "flex", gap: 40, flexWrap: "wrap" }}>
+
+          {/* Left: Controls */}
+          <div style={{ flex: "0 0 280px", minWidth: 240 }}>
+            {/* Archetype */}
+            <div style={{ marginBottom: 28 }}>
+              <label style={{ display: "block", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: textGhost, marginBottom: 10, fontWeight: 500, transition: "color 0.5s" }}>
+                Archetype
+              </label>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                {Object.entries(ARCHETYPES).map(([key, a]) => {
+                  const ac = isDark ? a.color : a.colorLight;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => { setArchetype(key); if (compareArchetype === key) setCompareArchetype(null); }}
+                      style={{
+                        background: archetype === key ? `${ac}${isDark ? "12" : "14"}` : "transparent",
+                        border: `1px solid ${archetype === key ? ac + "60" : borderLight}`,
+                        borderRadius: 8, padding: "10px 14px",
+                        cursor: "pointer", textAlign: "left",
+                        transition: "all 0.3s ease",
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <div style={{
+                          width: 8, height: 8, borderRadius: "50%",
+                          background: ac, boxShadow: archetype === key ? `0 0 12px ${ac}` : "none",
+                          transition: "box-shadow 0.3s ease",
+                        }} />
+                        <div>
+                          <div style={{ fontSize: 13, fontWeight: archetype === key ? 700 : 400, color: archetype === key ? textWhite : textDim, transition: "all 0.3s" }}>
+                            {a.name}
+                          </div>
+                          <div style={{ fontSize: 10, color: textFaint, marginTop: 1, transition: "color 0.5s" }}>{a.sub}</div>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Level */}
+            <div style={{ marginBottom: 28 }}>
+              <label style={{ display: "block", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: textGhost, marginBottom: 10, fontWeight: 500, transition: "color 0.5s" }}>
+                Career Level
+              </label>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                {Object.entries(LEVELS).map(([key, name]) => (
+                  <button
+                    key={key}
+                    onClick={() => setLevel(key)}
+                    style={{
+                      background: level === key ? `${accentColor}${isDark ? "18" : "14"}` : surfaceSoft,
+                      border: `1px solid ${level === key ? accentColor + "50" : borderLight}`,
+                      color: level === key ? textWhite : textSubtle,
+                      borderRadius: 6, padding: "7px 12px",
+                      fontSize: 11, fontWeight: level === key ? 600 : 400,
+                      cursor: "pointer", transition: "all 0.3s ease",
+                      fontFamily: "'DM Sans', sans-serif",
+                    }}
+                  >
+                    {name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Compare */}
+            <div style={{ marginBottom: 28 }}>
+              <label style={{ display: "block", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: textGhost, marginBottom: 10, fontWeight: 500, transition: "color 0.5s" }}>
+                Compare With
+              </label>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                <button
+                  onClick={() => setCompareArchetype(null)}
+                  style={{
+                    background: !compareArchetype ? (isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)") : surfaceSoft,
+                    border: `1px solid ${!compareArchetype ? borderActive : borderLight}`,
+                    color: !compareArchetype ? textWhite : textMuted,
+                    borderRadius: 6, padding: "6px 12px", fontSize: 11,
+                    cursor: "pointer", transition: "all 0.3s ease",
+                    fontFamily: "'DM Sans', sans-serif",
+                  }}
+                >
+                  None
+                </button>
+                {Object.entries(ARCHETYPES).filter(([k]) => k !== archetype).map(([key, a]) => {
+                  const ac = isDark ? a.color : a.colorLight;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => setCompareArchetype(key)}
+                      style={{
+                        background: compareArchetype === key ? `${ac}${isDark ? "18" : "14"}` : surfaceSoft,
+                        border: `1px solid ${compareArchetype === key ? ac + "50" : borderLight}`,
+                        borderRadius: 6, padding: "5px 10px",
+                        cursor: "pointer", transition: "all 0.3s ease",
+                        display: "flex", alignItems: "center", gap: 6,
+                        fontFamily: "'DM Sans', sans-serif",
+                      }}
+                    >
+                      <div style={{ width: 6, height: 6, borderRadius: "50%", background: ac }} />
+                      <span style={{ fontSize: 10, color: compareArchetype === key ? textWhite : textMuted, transition: "color 0.5s" }}>
+                        {a.name.split(" ")[0]}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Peak Strengths */}
+            <div style={{
+              background: surfaceCard,
+              border: `1px solid ${borderLight}`,
+              borderRadius: 10, padding: 16,
+              transition: "all 0.5s ease",
+            }}>
+              <label style={{ display: "block", fontSize: 10, letterSpacing: "0.2em", textTransform: "uppercase", color: textGhost, marginBottom: 12, fontWeight: 500, transition: "color 0.5s" }}>
+                Peak Strengths
+              </label>
+              {topCompetencies.map((c, i) => (
+                <div key={c.name} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: i < 2 ? 10 : 0 }}>
+                  <span style={{ fontFamily: "'Syne', sans-serif", fontSize: 22, fontWeight: 800, color: accentColor, minWidth: 30, transition: "color 0.6s" }}>
+                    {c.value}
+                  </span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 12, fontWeight: 500, color: textStrong, transition: "color 0.5s" }}>{c.name}</div>
+                    <div style={{
+                      marginTop: 4, height: 3, borderRadius: 2,
+                      background: barTrack,
+                      overflow: "hidden",
+                      transition: "background 0.5s ease",
+                    }}>
+                      <div style={{
+                        height: "100%", borderRadius: 2,
+                        width: `${c.value * 10}%`,
+                        background: `linear-gradient(90deg, ${accentColor}, ${accentColor}88)`,
+                        transition: "all 0.8s cubic-bezier(0.16,1,0.3,1)",
+                      }} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right: Chart */}
+          <div ref={containerRef} style={{ flex: 1, minWidth: 300, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ display: "flex", gap: 24, marginBottom: 16, flexWrap: "wrap", justifyContent: "center" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{ width: 20, height: 3, borderRadius: 2, background: accentColor, transition: "background 0.6s" }} />
+                <span style={{ fontSize: 11, color: textMid, transition: "color 0.5s" }}>{arc.name}</span>
+              </div>
+              {cmpArc && (
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div style={{ width: 20, height: 3, borderRadius: 2, background: cmpColor, opacity: 0.6, borderTop: `1px dashed ${cmpColor}` }} />
+                  <span style={{ fontSize: 11, color: textMid, transition: "color 0.5s" }}>{cmpArc.name}</span>
+                </div>
+              )}
+            </div>
+
+            <RoseChart
+              data={currentData}
+              color={accentColor}
+              glow={accentGlow}
+              compareData={compareData}
+              compareColor={cmpColor}
+              compareGlow={cmpGlow}
+              size={chartSize}
+              isDark={isDark}
+            />
+
+            <p style={{ fontSize: 11, color: textItalic, marginTop: 12, textAlign: "center", fontStyle: "italic", maxWidth: 380, transition: "color 0.5s" }}>
+              Scores represent relative competency emphasis — not absolute skill. Every archetype needs all ten; the shape shows where each one leads.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
