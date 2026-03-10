@@ -416,9 +416,10 @@
 
 <div id="app"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<!-- TODO: add integrity="sha384-..." SRI hashes (generate with: openssl dgst -sha384 -binary FILE.js | openssl base64 -A) -->
+<script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
 
 <script>
   // Theme toggle logic (outside React for instant load)
@@ -429,11 +430,7 @@
     icon.innerHTML = t === 'dark' ? '&#9790;' : '&#9728;';
     const frame = document.getElementById('radar-frame');
     if (frame && frame.contentDocument) {
-      const radarTheme = frame.contentDocument.documentElement.getAttribute('data-theme') || 'dark';
-      if (radarTheme !== t) {
-        const btn = frame.contentDocument.querySelector('.theme-toggle');
-        if (btn) btn.click();
-      }
+      frame.contentDocument.documentElement.setAttribute('data-theme', t);
     }
   }
   toggle.addEventListener('click', function() {
@@ -443,11 +440,11 @@
 
   // Force light mode for printing, restore original theme after
   window.addEventListener('beforeprint', function() {
-    window._themBeforePrint = document.documentElement.getAttribute('data-theme');
+    window._themeBeforePrint = document.documentElement.getAttribute('data-theme');
     setTheme('light');
   });
   window.addEventListener('afterprint', function() {
-    if (window._themBeforePrint) setTheme(window._themBeforePrint);
+    if (window._themeBeforePrint) setTheme(window._themeBeforePrint);
   });
 </script>
 
@@ -466,68 +463,71 @@ const CAREER_LEVELS = [
 ];
 
 const COMPETENCIES = [
-  { id: 'research', name: 'User Research', desc: 'Interviews, usability testing, synthesis, insight generation', icon: '\uD83D\uDD0D', color: '#ff4d6a', glow: 'rgba(255,77,106,0.12)' },
-  { id: 'ia', name: 'Information Architecture', desc: 'Content structure, navigation, taxonomy, sitemaps', icon: '\uD83C\uDFD7', color: '#ff8a4d', glow: 'rgba(255,138,77,0.12)' },
-  { id: 'interaction', name: 'Interaction Design', desc: 'Flows, wireframes, prototyping, micro-interactions', icon: '\u26A1', color: '#ffc645', glow: 'rgba(255,198,69,0.12)' },
-  { id: 'visual', name: 'Visual Design', desc: 'Layout, typography, color, iconography, brand expression', icon: '\uD83C\uDFA8', color: '#4ddb6a', glow: 'rgba(77,219,106,0.12)' },
-  { id: 'systems', name: 'Design Systems', desc: 'Components, tokens, documentation, governance', icon: '\uD83E\uDDF1', color: '#00e5c7', glow: 'rgba(0,229,199,0.12)' },
-  { id: 'accessibility', name: 'Accessibility', desc: 'WCAG, assistive tech, inclusive patterns', icon: '\u267F', color: '#38bdf8', glow: 'rgba(56,189,248,0.12)' },
-  { id: 'strategy', name: 'Product Strategy', desc: 'Roadmapping, metrics, stakeholder alignment, OKRs', icon: '\uD83E\uDDED', color: '#818cf8', glow: 'rgba(129,140,248,0.12)' },
-  { id: 'leadership', name: 'Design Leadership', desc: 'Mentoring, critique, team building, org influence', icon: '\uD83D\uDC51', color: '#a78bfa', glow: 'rgba(167,139,250,0.12)' },
-  { id: 'ops', name: 'Design Operations', desc: 'Process, tooling, team scaling, workflow management', icon: '\u2699\uFE0F', color: '#f472b6', glow: 'rgba(244,114,182,0.12)' },
-  { id: 'craft', name: 'Prototyping & Craft', desc: 'Hi-fi execution, motion, code awareness, tool mastery', icon: '\u2726', color: '#fb7185', glow: 'rgba(251,113,133,0.12)' },
+  { id: 'research', name: 'User Research', desc: 'Interviews, usability testing, synthesis, insight generation', icon: '\uD83D\uDD0D', color: 'var(--coral)', glow: 'var(--coral-glow)' },
+  { id: 'ia', name: 'Information Architecture', desc: 'Content structure, navigation, taxonomy, sitemaps', icon: '\uD83C\uDFD7', color: 'var(--orange)', glow: 'var(--orange-glow)' },
+  { id: 'interaction', name: 'Interaction Design', desc: 'Flows, wireframes, prototyping, micro-interactions', icon: '\u26A1', color: 'var(--amber)', glow: 'var(--amber-glow)' },
+  { id: 'visual', name: 'Visual Design', desc: 'Layout, typography, color, iconography, brand expression', icon: '\uD83C\uDFA8', color: 'var(--green)', glow: 'var(--green-glow)' },
+  { id: 'systems', name: 'Design Systems', desc: 'Components, tokens, documentation, governance', icon: '\uD83E\uDDF1', color: 'var(--teal)', glow: 'var(--teal-glow)' },
+  { id: 'accessibility', name: 'Accessibility', desc: 'WCAG, assistive tech, inclusive patterns', icon: '\u267F', color: 'var(--sky)', glow: 'var(--sky-glow)' },
+  { id: 'strategy', name: 'Product Strategy', desc: 'Roadmapping, metrics, stakeholder alignment, OKRs', icon: '\uD83E\uDDED', color: 'var(--indigo)', glow: 'var(--indigo-glow)' },
+  { id: 'leadership', name: 'Design Leadership', desc: 'Mentoring, critique, team building, org influence', icon: '\uD83D\uDC51', color: 'var(--purple)', glow: 'var(--purple-glow)' },
+  { id: 'ops', name: 'Design Operations', desc: 'Process, tooling, team scaling, workflow management', icon: '\u2699\uFE0F', color: 'var(--pink)', glow: 'var(--pink-glow)' },
+  { id: 'craft', name: 'Prototyping & Craft', desc: 'Hi-fi execution, motion, code awareness, tool mastery', icon: '\u2726', color: 'var(--rose)', glow: 'var(--rose-glow)' },
 ];
 
 const SOFT_SKILLS = [
-  { id: 'presentation', name: 'Presenting & Storytelling', desc: 'Pitching ideas, presenting to stakeholders', icon: '\uD83C\uDF99', color: '#ff4d6a', glow: 'rgba(255,77,106,0.12)' },
-  { id: 'communication', name: 'Cross-Functional Comms', desc: 'Working with engineers, PMs, marketing, execs', icon: '\uD83D\uDCAC', color: '#ffc645', glow: 'rgba(255,198,69,0.12)' },
-  { id: 'critique', name: 'Giving & Receiving Feedback', desc: 'Constructive critique, iterating on input', icon: '\uD83D\uDD04', color: '#00e5c7', glow: 'rgba(0,229,199,0.12)' },
-  { id: 'facilitation', name: 'Workshop Facilitation', desc: 'Leading sprints, brainstorms, alignment sessions', icon: '\uD83E\uDDE9', color: '#818cf8', glow: 'rgba(129,140,248,0.12)' },
-  { id: 'negotiation', name: 'Pushback & Negotiation', desc: 'Advocating for users, defending decisions', icon: '\uD83D\uDEE1', color: '#a78bfa', glow: 'rgba(167,139,250,0.12)' },
-  { id: 'timemanagement', name: 'Time & Project Mgmt', desc: 'Scoping, deadlines, managing ambiguity', icon: '\u23F1', color: '#f472b6', glow: 'rgba(244,114,182,0.12)' },
+  { id: 'presentation', name: 'Presenting & Storytelling', desc: 'Pitching ideas, presenting to stakeholders', icon: '\uD83C\uDF99', color: 'var(--coral)', glow: 'var(--coral-glow)' },
+  { id: 'communication', name: 'Cross-Functional Comms', desc: 'Working with engineers, PMs, marketing, execs', icon: '\uD83D\uDCAC', color: 'var(--amber)', glow: 'var(--amber-glow)' },
+  { id: 'critique', name: 'Giving & Receiving Feedback', desc: 'Constructive critique, iterating on input', icon: '\uD83D\uDD04', color: 'var(--teal)', glow: 'var(--teal-glow)' },
+  { id: 'facilitation', name: 'Workshop Facilitation', desc: 'Leading sprints, brainstorms, alignment sessions', icon: '\uD83E\uDDE9', color: 'var(--indigo)', glow: 'var(--indigo-glow)' },
+  { id: 'negotiation', name: 'Pushback & Negotiation', desc: 'Advocating for users, defending decisions', icon: '\uD83D\uDEE1', color: 'var(--purple)', glow: 'var(--purple-glow)' },
+  { id: 'timemanagement', name: 'Time & Project Mgmt', desc: 'Scoping, deadlines, managing ambiguity', icon: '\u23F1', color: 'var(--pink)', glow: 'var(--pink-glow)' },
 ];
 
 const PROFESSIONAL_ASSETS = [
-  { id: 'resume', title: 'Resume / CV', sub: 'Tailored, current, keyword-optimized', color: '#ff4d6a', glow: 'rgba(255,77,106,0.08)' },
-  { id: 'portfolio_site', title: 'Portfolio Website', sub: 'Custom domain, case studies, contact', color: '#ff8a4d', glow: 'rgba(255,138,77,0.08)' },
-  { id: 'case_studies', title: 'Case Studies (3+)', sub: 'Process, decisions, and outcomes documented', color: '#ffc645', glow: 'rgba(255,198,69,0.08)' },
-  { id: 'linkedin', title: 'LinkedIn Profile', sub: 'Photo, headline, summary, experience', color: '#38bdf8', glow: 'rgba(56,189,248,0.08)' },
-  { id: 'dribbble', title: 'Dribbble', sub: 'Active shots showcasing visual craft', color: '#f472b6', glow: 'rgba(244,114,182,0.08)' },
-  { id: 'behance', title: 'Behance', sub: 'Full project presentations with context', color: '#818cf8', glow: 'rgba(129,140,248,0.08)' },
-  { id: 'figma_community', title: 'Figma Community', sub: 'Published files, templates, resources', color: '#a78bfa', glow: 'rgba(167,139,250,0.08)' },
-  { id: 'github', title: 'GitHub / CodePen', sub: 'Code contributions, prototypes', color: '#4ddb6a', glow: 'rgba(77,219,106,0.08)' },
-  { id: 'blog', title: 'Blog / Writing', sub: 'Design articles on Medium, Substack, etc.', color: '#00e5c7', glow: 'rgba(0,229,199,0.08)' },
-  { id: 'social', title: 'Design Social Presence', sub: 'X, Threads, or other design engagement', color: '#fb7185', glow: 'rgba(251,113,133,0.08)' },
+  { id: 'resume', title: 'Resume / CV', sub: 'Tailored, current, keyword-optimized', color: 'var(--coral)', glow: 'var(--coral-glow)' },
+  { id: 'portfolio_site', title: 'Portfolio Website', sub: 'Custom domain, case studies, contact', color: 'var(--orange)', glow: 'var(--orange-glow)' },
+  { id: 'case_studies', title: 'Case Studies (3+)', sub: 'Process, decisions, and outcomes documented', color: 'var(--amber)', glow: 'var(--amber-glow)' },
+  { id: 'linkedin', title: 'LinkedIn Profile', sub: 'Photo, headline, summary, experience', color: 'var(--sky)', glow: 'var(--sky-glow)' },
+  { id: 'dribbble', title: 'Dribbble', sub: 'Active shots showcasing visual craft', color: 'var(--pink)', glow: 'var(--pink-glow)' },
+  { id: 'behance', title: 'Behance', sub: 'Full project presentations with context', color: 'var(--indigo)', glow: 'var(--indigo-glow)' },
+  { id: 'figma_community', title: 'Figma Community', sub: 'Published files, templates, resources', color: 'var(--purple)', glow: 'var(--purple-glow)' },
+  { id: 'github', title: 'GitHub / CodePen', sub: 'Code contributions, prototypes', color: 'var(--green)', glow: 'var(--green-glow)' },
+  { id: 'blog', title: 'Blog / Writing', sub: 'Design articles on Medium, Substack, etc.', color: 'var(--teal)', glow: 'var(--teal-glow)' },
+  { id: 'social', title: 'Design Social Presence', sub: 'X, Threads, or other design engagement', color: 'var(--rose)', glow: 'var(--rose-glow)' },
 ];
 
 const ASSET_STATUSES = [
   { id: 'none', label: "Don't have", color: 'var(--text-muted)', glow: 'transparent' },
-  { id: 'outdated', label: 'Outdated', color: '#ff8a4d', glow: 'rgba(255,138,77,0.1)' },
-  { id: 'wip', label: 'In Progress', color: '#ffc645', glow: 'rgba(255,198,69,0.1)' },
-  { id: 'ready', label: 'Up to Date', color: '#4ddb6a', glow: 'rgba(77,219,106,0.1)' },
+  { id: 'outdated', label: 'Outdated', color: 'var(--orange)', glow: 'var(--orange-glow)' },
+  { id: 'wip', label: 'In Progress', color: 'var(--amber)', glow: 'var(--amber-glow)' },
+  { id: 'ready', label: 'Up to Date', color: 'var(--green)', glow: 'var(--green-glow)' },
 ];
 
 const EXPERIENCE_ITEMS = [
-  { id: 'solo_projects', title: 'Solo / Side Projects', sub: 'Personal projects showing initiative', color: '#ff4d6a', glow: 'rgba(255,77,106,0.08)' },
-  { id: 'client_work', title: 'Client / Agency Work', sub: 'Projects with external stakeholders', color: '#ff8a4d', glow: 'rgba(255,138,77,0.08)' },
-  { id: 'product_team', title: 'Product Team Experience', sub: 'In-house with cross-functional teams', color: '#ffc645', glow: 'rgba(255,198,69,0.08)' },
-  { id: 'enterprise', title: 'Enterprise / Complex Systems', sub: 'B2B, internal tools, healthcare, fintech', color: '#00e5c7', glow: 'rgba(0,229,199,0.08)' },
-  { id: 'consumer', title: 'Consumer / B2C Products', sub: 'Consumer apps, e-commerce, social', color: '#38bdf8', glow: 'rgba(56,189,248,0.08)' },
-  { id: 'zero_to_one', title: '0 \u2192 1 Product Work', sub: 'Built from concept to launch', color: '#818cf8', glow: 'rgba(129,140,248,0.08)' },
-  { id: 'redesign', title: 'Major Redesign', sub: 'Led a significant product overhaul', color: '#a78bfa', glow: 'rgba(167,139,250,0.08)' },
-  { id: 'mentored', title: 'Mentored Others', sub: 'Guided juniors, interns, career switchers', color: '#f472b6', glow: 'rgba(244,114,182,0.08)' },
-  { id: 'speaking', title: 'Public Speaking / Teaching', sub: 'Talks, workshops, courses, conferences', color: '#4ddb6a', glow: 'rgba(77,219,106,0.08)' },
-  { id: 'open_source', title: 'Open Source / Community', sub: 'Tools, libraries, or community resources', color: '#fb7185', glow: 'rgba(251,113,133,0.08)' },
+  { id: 'solo_projects', title: 'Solo / Side Projects', sub: 'Personal projects showing initiative', color: 'var(--coral)', glow: 'var(--coral-glow)' },
+  { id: 'client_work', title: 'Client / Agency Work', sub: 'Projects with external stakeholders', color: 'var(--orange)', glow: 'var(--orange-glow)' },
+  { id: 'product_team', title: 'Product Team Experience', sub: 'In-house with cross-functional teams', color: 'var(--amber)', glow: 'var(--amber-glow)' },
+  { id: 'enterprise', title: 'Enterprise / Complex Systems', sub: 'B2B, internal tools, healthcare, fintech', color: 'var(--teal)', glow: 'var(--teal-glow)' },
+  { id: 'consumer', title: 'Consumer / B2C Products', sub: 'Consumer apps, e-commerce, social', color: 'var(--sky)', glow: 'var(--sky-glow)' },
+  { id: 'zero_to_one', title: '0 \u2192 1 Product Work', sub: 'Built from concept to launch', color: 'var(--indigo)', glow: 'var(--indigo-glow)' },
+  { id: 'redesign', title: 'Major Redesign', sub: 'Led a significant product overhaul', color: 'var(--purple)', glow: 'var(--purple-glow)' },
+  { id: 'mentored', title: 'Mentored Others', sub: 'Guided juniors, interns, career switchers', color: 'var(--pink)', glow: 'var(--pink-glow)' },
+  { id: 'speaking', title: 'Public Speaking / Teaching', sub: 'Talks, workshops, courses, conferences', color: 'var(--green)', glow: 'var(--green-glow)' },
+  { id: 'open_source', title: 'Open Source / Community', sub: 'Tools, libraries, or community resources', color: 'var(--rose)', glow: 'var(--rose-glow)' },
 ];
 
 const ARCHETYPES = [
-  { name: 'The Researcher', color: '#ff4d6a', glow: 'rgba(255,77,106,0.08)', focus: 'Deep in discovery \u2014 insight & evidence', peaks: ['research', 'strategy', 'accessibility'] },
-  { name: 'The Craftsperson', color: '#ffc645', glow: 'rgba(255,198,69,0.08)', focus: 'Pixel-perfect polish, motion & detail', peaks: ['visual', 'craft', 'interaction'] },
-  { name: 'The Architect', color: '#00e5c7', glow: 'rgba(0,229,199,0.08)', focus: 'Systems thinker \u2014 scalable foundations', peaks: ['systems', 'ia', 'ops'] },
-  { name: 'The Strategist', color: '#818cf8', glow: 'rgba(129,140,248,0.08)', focus: 'Big-picture, design meets business', peaks: ['strategy', 'leadership', 'research'] },
-  { name: 'The Generalist', color: '#f472b6', glow: 'rgba(244,114,182,0.08)', focus: 'Adaptable, cross-functional, fills gaps', peaks: [] },
-  { name: 'The Champion', color: '#a78bfa', glow: 'rgba(167,139,250,0.08)', focus: 'Evangelist \u2014 teams, culture, buy-in', peaks: ['leadership', 'ops', 'strategy'] },
+  { name: 'The Researcher', color: 'var(--coral)', glow: 'var(--coral-glow)', focus: 'Deep in discovery \u2014 insight & evidence', peaks: ['research', 'strategy', 'accessibility'] },
+  { name: 'The Craftsperson', color: 'var(--amber)', glow: 'var(--amber-glow)', focus: 'Pixel-perfect polish, motion & detail', peaks: ['visual', 'craft', 'interaction'] },
+  { name: 'The Architect', color: 'var(--teal)', glow: 'var(--teal-glow)', focus: 'Systems thinker \u2014 scalable foundations', peaks: ['systems', 'ia', 'ops'] },
+  { name: 'The Strategist', color: 'var(--indigo)', glow: 'var(--indigo-glow)', focus: 'Big-picture, design meets business', peaks: ['strategy', 'leadership', 'research'] },
+  { name: 'The Generalist', color: 'var(--pink)', glow: 'var(--pink-glow)', focus: 'Adaptable, cross-functional, fills gaps', peaks: [] },
+  { name: 'The Champion', color: 'var(--purple)', glow: 'var(--purple-glow)', focus: 'Evangelist \u2014 teams, culture, buy-in', peaks: ['leadership', 'ops', 'strategy'] },
 ];
+
+const GENERALIST_VARIANCE_THRESHOLD = 0.8; // below this variance → scores are even enough to call "generalist"
+const GENERALIST_MIN_TOTAL = 20;           // must have rated enough competencies to qualify
 
 function getArchetype(scores) {
   const vals = COMPETENCIES.map(c => scores[c.id] || 0);
@@ -535,7 +535,7 @@ function getArchetype(scores) {
   if (total === 0) return null;
   const avg = total / vals.length;
   const variance = vals.reduce((s, v) => s + Math.pow(v - avg, 2), 0) / vals.length;
-  if (variance < 0.8 && total >= 20) return ARCHETYPES.find(a => a.name === 'The Generalist');
+  if (variance < GENERALIST_VARIANCE_THRESHOLD && total >= GENERALIST_MIN_TOTAL) return ARCHETYPES.find(a => a.name === 'The Generalist');
   let best = null, bestS = -1;
   for (const arch of ARCHETYPES) {
     if (!arch.peaks.length) continue;
@@ -615,8 +615,8 @@ function ProgressRing({ pct, color, size = 100 }) {
 function ResultsPanel({ name, careerLevel, compScores, softScores, assetStatuses, experienceChecks, onReset }) {
   const compTotal = Object.values(compScores).reduce((a, b) => a + b, 0);
   const softTotal = Object.values(softScores).reduce((a, b) => a + b, 0);
-  let assetScore = 0;
-  Object.values(assetStatuses).forEach(v => { if (v === 'ready') assetScore += 3; else if (v === 'wip') assetScore += 2; else if (v === 'outdated') assetScore += 1; });
+  const ASSET_POINTS = { ready: 3, wip: 2, outdated: 1 };
+  const assetScore = Object.values(assetStatuses).reduce((sum, v) => sum + (ASSET_POINTS[v] || 0), 0);
   const expCount = Object.values(experienceChecks).filter(Boolean).length;
   const grandTotal = compTotal + softTotal + assetScore + expCount * 2;
   const grandMax = 50 + 30 + 30 + 20;
@@ -759,7 +759,7 @@ function App() {
 
   const handleCompRate = useCallback((id, val) => setCompScores(p => ({ ...p, [id]: val })), []);
   const handleSoftRate = useCallback((id, val) => setSoftScores(p => ({ ...p, [id]: val })), []);
-  const handleAssetStatus = useCallback((id, status) => setAssetStatuses(p => ({ ...p, [id]: p[id] === status ? null : status })), []);
+  const handleAssetStatus = useCallback((id, status) => setAssetStatuses(p => ({ ...p, [id]: p[id] === status ? 'none' : status })), []);
   const handleExpToggle = useCallback((id) => setExperienceChecks(p => ({ ...p, [id]: !p[id] })), []);
 
   const handleReset = () => {
@@ -937,20 +937,14 @@ ReactDOM.createRoot(document.getElementById('app')).render(<App />);
 
       // Sync theme into iframe on load
       const t = document.documentElement.getAttribute('data-theme');
-      const radarTheme = frame.contentDocument.documentElement.getAttribute('data-theme') || 'dark';
-      if (radarTheme !== t) {
-        const btn = frame.contentDocument.querySelector('.theme-toggle');
-        if (btn) btn.click();
-      }
+      frame.contentDocument.documentElement.setAttribute('data-theme', t);
 
       function resize() {
         const h = frame.contentDocument.documentElement.scrollHeight;
         frame.style.height = h + 'px';
       }
       resize();
-      // Re-check after fonts/D3 finish rendering
-      setTimeout(resize, 500);
-      setTimeout(resize, 1500);
+      new ResizeObserver(resize).observe(frame.contentDocument.documentElement);
     });
 
     // Before printing: clone the live rendered DOM out of the iframe into the page
