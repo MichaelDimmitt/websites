@@ -430,7 +430,11 @@
     icon.innerHTML = t === 'dark' ? '&#9790;' : '&#9728;';
     const frame = document.getElementById('radar-frame');
     if (frame && frame.contentDocument) {
-      frame.contentDocument.documentElement.setAttribute('data-theme', t);
+      const radarTheme = frame.contentDocument.documentElement.getAttribute('data-theme') || 'dark';
+      if (radarTheme !== t) {
+        const btn = frame.contentDocument.querySelector('.theme-toggle');
+        if (btn) btn.click();
+      }
     }
   }
   toggle.addEventListener('click', function() {
@@ -937,7 +941,11 @@ ReactDOM.createRoot(document.getElementById('app')).render(<App />);
 
       // Sync theme into iframe on load
       const t = document.documentElement.getAttribute('data-theme');
-      frame.contentDocument.documentElement.setAttribute('data-theme', t);
+      const radarTheme = frame.contentDocument.documentElement.getAttribute('data-theme') || 'dark';
+      if (radarTheme !== t) {
+        const btn = frame.contentDocument.querySelector('.theme-toggle');
+        if (btn) btn.click();
+      }
 
       function resize() {
         const h = frame.contentDocument.documentElement.scrollHeight;
