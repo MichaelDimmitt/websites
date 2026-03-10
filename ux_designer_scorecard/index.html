@@ -716,7 +716,7 @@ function ResultsPanel({ name, careerLevel, compScores, softScores, assetStatuses
           {growthAreas.map(g => (
             <div className="rp-growth-item" key={g.name}>
               <div className="rp-growth-name" style={{ color: g.color }}>{g.name}</div>
-              <div className="rp-growth-score">{g.sec} \u00B7 {g.score}/5</div>
+              <div className="rp-growth-score">{g.sec} · {g.score}/5</div>
             </div>
           ))}
         </>
@@ -745,7 +745,7 @@ function ResultsPanel({ name, careerLevel, compScores, softScores, assetStatuses
 
       <div className="footer">
         <div className="footer-logo">Jacksonville Design Community</div>
-        <div className="footer-sub">UX Assessment \u00B7 {new Date().getFullYear()}</div>
+        <div className="footer-sub">UX Assessment · {new Date().getFullYear()}</div>
       </div>
     </div>
   );
@@ -780,7 +780,7 @@ function App() {
         <div className="header">
           <div className="tag">Workshop Activity</div>
           <h1>UX DESIGNER<span>SCORECARD</span></h1>
-          <p className="subtitle">Comprehensive self-assessment across craft, career, presence, and experience. Be honest \u2014 this is for you.</p>
+          <p className="subtitle">Comprehensive self-assessment across craft, career, presence, and experience. Be honest — this is for you.</p>
         </div>
 
         <div className="meta-row">
@@ -809,7 +809,7 @@ function App() {
         <div className="section">
           <div className="section-header">
             <div className="section-num" style={{ background: 'var(--amber-glow)', color: 'var(--amber)' }}>02</div>
-            <div><div className="section-title">Core Competencies</div><div className="section-subtitle">Rate your skill level \u2014 1 (novice) to 5 (expert)</div></div>
+            <div><div className="section-title">Core Competencies</div><div className="section-subtitle">Rate your skill level — 1 (novice) to 5 (expert)</div></div>
           </div>
           <div className="card-grid">
             {COMPETENCIES.map((comp, idx) => {
