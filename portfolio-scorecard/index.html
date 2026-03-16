@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Scorecard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* LIGHT (default) */
+  :root {
+    --bg: #f2f3f7;
+    --surface: #ffffff;
+    --surface2: #f5f6fa;
+    --surface3: #ffffff;
+    --border: #dfe1e8;
+    --border-accent: #c8cad4;
+    --text: #1a1a2e;
+    --text-dim: #5c5f7a;
+    --text-muted: #9b9db3;
+    --coral: #e8365a;
+    --coral-glow: rgba(232,54,90,0.10);
+    --orange: #e07030;
+    --orange-glow: rgba(224,112,48,0.10);
+    --amber: #d4a000;
+    --amber-glow: rgba(212,160,0,0.10);
+    --green: #2db84d;
+    --green-glow: rgba(45,184,77,0.10);
+    --teal: #00b8a0;
+    --teal-glow: rgba(0,184,160,0.10);
+    --sky: #2196e0;
+    --sky-glow: rgba(33,150,224,0.10);
+    --indigo: #6366e0;
+    --indigo-glow: rgba(99,102,224,0.10);
+    --purple: #8b6de0;
+    --purple-glow: rgba(139,109,224,0.10);
+    --pink: #d45a9e;
+    --pink-glow: rgba(212,90,158,0.10);
+    --rose: #e05a6e;
+    --rose-glow: rgba(224,90,110,0.10);
+    --sidebar-w: 380px;
+    --grain-opacity: 0.012;
+    --card-bg: #ffffff;
+    --input-bg: #ffffff;
+  }
+  /* DARK */
+  [data-theme="dark"] {
+    --bg: #08090e;
+    --surface: #10121a;
+    --surface2: #181b27;
+    --surface3: #1e2133;
+    --border: #252836;
+    --border-accent: #2d3147;
+    --text: #e8eaf0;
+    --text-dim: #6b7194;
+    --text-muted: #3d4162;
+    --coral: #ff4d6a;
+    --coral-glow: rgba(255,77,106,0.12);
+    --orange: #ff8a4d;
+    --orange-glow: rgba(255,138,77,0.12);
+    --amber: #ffc645;
+    --amber-glow: rgba(255,198,69,0.12);
+    --green: #4ddb6a;
+    --green-glow: rgba(77,219,106,0.12);
+    --teal: #00e5c7;
+    --teal-glow: rgba(0,229,199,0.12);
+    --sky: #38bdf8;
+    --sky-glow: rgba(56,189,248,0.12);
+    --indigo: #818cf8;
+    --indigo-glow: rgba(129,140,248,0.12);
+    --purple: #a78bfa;
+    --purple-glow: rgba(167,139,250,0.12);
+    --pink: #f472b6;
+    --pink-glow: rgba(244,114,182,0.12);
+    --rose: #fb7185;
+    --rose-glow: rgba(251,113,133,0.12);
+    --grain-opacity: 0.025;
+    --card-bg: var(--bg);
+    --input-bg: var(--bg);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text);
+    min-height: 100vh; -webkit-font-smoothing: antialiased;
+  }
+  .grain {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none;
+    z-index: 9999; opacity: var(--grain-opacity);
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Transitions for theme switch */
+  body, .sidebar, .card, .cs-block, .rp-stat, .cs-rank-item, .rp-growth-item, .guidance-card,
+  .pattern-card, .meta-input, .rev-btn, .arch-pill, .add-cs-btn, .cs-name-input, .dot, .btn,
+  .section-num, .footer { transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease; }
+
+  /* Theme toggle */
+  .theme-toggle {
+    position: fixed; top: 20px; right: 24px; z-index: 1000;
+    width: 48px; height: 24px; border-radius: 12px;
+    border: 1px solid var(--border); background: var(--surface2);
+    cursor: pointer; padding: 0; display: flex; align-items: center;
+    transition: background 0.4s, border-color 0.4s;
+  }
+  .theme-toggle .track {
+    width: 100%; height: 100%; position: relative;
+    display: flex; align-items: center; justify-content: space-between; padding: 0 6px;
+  }
+  .theme-toggle .icon { font-size: 11px; line-height: 1; opacity: 0.5; user-select: none; }
+  .theme-toggle .knob {
+    position: absolute; top: 2px; width: 18px; height: 18px; border-radius: 50%;
+    background: var(--text); transition: left 0.4s cubic-bezier(0.68, -0.15, 0.32, 1.15);
+  }
+  .theme-toggle .knob.light { left: calc(100% - 21px); }
+  .theme-toggle .knob.dark { left: 3px; }
+  .shell { display: flex; min-height: 100vh; }
+  .main { flex: 1; min-width: 0; padding: 44px 32px 80px; max-width: 760px; margin: 0 auto; }
+  .sidebar {
+    width: var(--sidebar-w); flex-shrink: 0; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    border-left: 1px solid var(--border); background: var(--surface); padding: 32px 24px;
+    scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+  }
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-track { background: transparent; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .mobile-results { display: none; }
+  @media (max-width: 1060px) {
+    .shell { flex-direction: column; }
+    .sidebar { display: none; }
+    .mobile-results { display: block; margin-top: 48px; }
+    .main { max-width: 720px; padding: 36px 24px 40px; }
+  }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 44px; position: relative; }
+  .header::after {
+    content: ''; position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%);
+    width: 60px; height: 2px; background: linear-gradient(90deg, transparent, var(--teal), transparent);
+  }
+  .tag {
+    font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--teal); margin-bottom: 12px; display: inline-block;
+    padding: 4px 12px; border: 1px solid rgba(0,229,199,0.25); border-radius: 2px; background: var(--teal-glow);
+  }
+  h1 {
+    font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px, 6vw, 68px);
+    line-height: 0.92; letter-spacing: -1px; margin-bottom: 8px;
+  }
+  h1 span {
+    display: block; background: linear-gradient(135deg, var(--teal), var(--sky));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .subtitle { font-size: 13px; color: var(--text-dim); font-weight: 300; max-width: 520px; margin: 0 auto; line-height: 1.55; }
+
+  /* Meta row */
+  .meta-row {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    margin-bottom: 44px; flex-wrap: wrap;
+  }
+  .meta-label {
+    font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--text-muted);
+  }
+  .meta-input {
+    background: var(--input-bg); border: 1px solid var(--border); color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 8px 16px; border-radius: 4px;
+    width: 200px; outline: none; transition: border-color 0.3s, background 0.4s;
+  }
+  .meta-input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px var(--teal-glow); }
+  .meta-input::placeholder { color: var(--text-muted); }
+  .date-display { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-muted); letter-spacing: 1px; }
+
+  /* Sections */
+  .section { margin-bottom: 44px; }
+  .section-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+    padding-bottom: 12px; border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: 'Bebas Neue', sans-serif; font-size: 24px; line-height: 1;
+    width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
+    border-radius: 7px; flex-shrink: 0;
+  }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 1px; line-height: 1; }
+  .section-subtitle { font-size: 12px; color: var(--text-dim); font-weight: 300; }
+
+  /* Reviewer type */
+  .reviewer-row { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 16px; }
+  .rev-btn {
+    background: var(--card-bg); border: 1px solid var(--border); color: var(--text-dim);
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+    padding: 10px 18px; border-radius: 6px; cursor: pointer; transition: all 0.25s;
+  }
+  .rev-btn:hover { border-color: var(--border-accent); background: var(--surface2); }
+  .rev-btn.selected { border-color: var(--teal); background: var(--teal-glow); color: var(--text); }
+
+  /* Archetype pills */
+  .arch-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .arch-pill {
+    font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500;
+    padding: 7px 14px; border-radius: 20px; cursor: pointer; transition: all 0.25s;
+    border: 1px solid var(--border); background: transparent; color: var(--text-dim);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .arch-pill:hover { border-color: var(--border-accent); }
+  .arch-pill.selected { color: var(--text); }
+  .arch-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Card grid */
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 640px) { .card-grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px;
+    padding: 20px; position: relative; overflow: hidden; transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .card:hover { border-color: var(--border-accent); }
+  .card.rated { box-shadow: 0 0 18px var(--card-glow, var(--coral-glow)); }
+  .card-num {
+    position: absolute; top: 12px; right: 16px; font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px; color: var(--text-muted); opacity: 0.3; line-height: 1;
+  }
+  .card-icon {
+    width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center;
+    justify-content: center; font-size: 15px; margin-bottom: 10px; border: 1px solid;
+  }
+  .card-name { font-weight: 700; font-size: 14px; margin-bottom: 2px; letter-spacing: -0.2px; }
+  .card-desc { font-size: 11px; color: var(--text-dim); line-height: 1.45; margin-bottom: 14px; }
+
+  /* Rating dots */
+  .rating { display: flex; align-items: center; gap: 4px; }
+  .rating-label {
+    font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 0.8px;
+    text-transform: uppercase; color: var(--text-muted); width: 48px; flex-shrink: 0;
+  }
+  .rating-label.end { text-align: right; }
+  .dots { display: flex; gap: 5px; flex: 1; justify-content: center; }
+  .dot {
+    width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border);
+    cursor: pointer; transition: all 0.2s; position: relative; background: transparent;
+  }
+  .dot:hover { border-color: var(--dot-color, var(--teal)); transform: scale(1.12); }
+  .dot.filled {
+    background: var(--dot-color, var(--teal)); border-color: var(--dot-color, var(--teal));
+    box-shadow: 0 0 10px var(--dot-glow, var(--teal-glow));
+  }
+  .dot-num {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-muted);
+    pointer-events: none; transition: color 0.2s;
+  }
+  .dot.filled .dot-num { color: #fff; font-weight: 700; }
+  .score-val {
+    font-family: 'Bebas Neue', sans-serif; font-size: 22px; margin-left: 4px;
+    min-width: 18px; text-align: center; line-height: 1; opacity: 0; transition: opacity 0.3s;
+  }
+  .score-val.visible { opacity: 1; }
+
+  /* Case study block */
+  .cs-block {
+    background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
+    padding: 20px; margin-bottom: 14px; position: relative; transition: border-color 0.3s;
+  }
+  .cs-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .cs-number {
+    font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--text-muted);
+    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+    border-radius: 6px; background: var(--surface2); flex-shrink: 0;
+  }
+  .cs-name-input {
+    flex: 1; background: transparent; border: none; border-bottom: 1px solid var(--border);
+    color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+    padding: 4px 0; outline: none; transition: border-color 0.3s;
+  }
+  .cs-name-input:focus { border-color: var(--amber); }
+  .cs-name-input::placeholder { color: var(--text-muted); font-weight: 400; }
+  .cs-remove {
+    width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border);
+    background: transparent; color: var(--text-muted); font-size: 14px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0;
+  }
+  .cs-remove:hover { border-color: var(--coral); color: var(--coral); background: var(--coral-glow); }
+  .cs-dims { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .cs-dim-row {
+    display: flex; align-items: center; gap: 10px; padding: 8px 0;
+    border-bottom: 1px solid rgba(37,40,54,0.5);
+  }
+  .cs-dim-row:last-child { border-bottom: none; }
+  .cs-dim-info { flex: 1; min-width: 0; }
+  .cs-dim-name { font-weight: 600; font-size: 12px; margin-bottom: 1px; }
+  .cs-dim-desc { font-size: 10px; color: var(--text-muted); line-height: 1.3; }
+  .cs-rating { flex-shrink: 0; }
+  .cs-rating .dots { gap: 4px; }
+  .cs-rating .dot { width: 24px; height: 24px; }
+  .cs-rating .dot-num { font-size: 8px; }
+
+  .add-cs-btn {
+    width: 100%; padding: 14px; border: 2px dashed var(--border); border-radius: 10px;
+    background: transparent; color: var(--text-dim); font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.25s;
+  }
+  .add-cs-btn:hover { border-color: var(--amber); color: var(--amber); background: var(--amber-glow); }
+  .add-cs-btn:disabled { opacity: 0.3; cursor: default; }
+  .add-cs-btn:disabled:hover { border-color: var(--border); color: var(--text-dim); background: transparent; }
+
+  /* ═══ SIDEBAR / RESULTS ═══ */
+  .results-panel {}
+  .rp-tag {
+    font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--text-muted); margin-bottom: 20px; text-align: center;
+  }
+  .rp-gradient-bar {
+    height: 2px; margin-bottom: 24px; border-radius: 1px;
+    background: linear-gradient(90deg, var(--teal), var(--amber), var(--indigo));
+  }
+  .progress-ring-wrap { text-align: center; margin-bottom: 24px; }
+  .progress-ring-label {
+    font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--text-muted); margin-top: 8px;
+  }
+  .rp-section-title {
+    font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--text-muted); margin: 20px 0 10px; padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .rp-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+  .rp-stat {
+    text-align: center; padding: 10px 6px; border: 1px solid var(--border);
+    border-radius: 6px; background: var(--surface2);
+  }
+  .rp-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 24px; line-height: 1; }
+  .rp-stat-max { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-muted); }
+  .rp-stat-label { font-family: 'Space Mono', monospace; font-size: 7px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-top: 2px; }
+  .rp-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .rp-bar-label { font-size: 10px; color: var(--text-dim); width: 100px; flex-shrink: 0; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rp-bar-track { flex: 1; height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .rp-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+  .rp-bar-val { font-family: 'Space Mono', monospace; font-size: 9px; width: 16px; color: var(--text-dim); text-align: right; }
+
+  /* Case study ranking */
+  .cs-rank-item {
+    padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--surface2); margin-bottom: 6px; display: flex; align-items: center; gap: 10px;
+  }
+  .cs-rank-num { font-family: 'Bebas Neue', sans-serif; font-size: 20px; line-height: 1; min-width: 18px; }
+  .cs-rank-info { flex: 1; min-width: 0; }
+  .cs-rank-name { font-weight: 600; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cs-rank-score { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-muted); }
+  .cs-rank-tier {
+    font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.5px;
+    text-transform: uppercase; padding: 2px 8px; border-radius: 3px; flex-shrink: 0;
+  }
+
+  /* Pattern card */
+  .pattern-card {
+    padding: 14px; border-radius: 8px; border: 1px solid; margin-bottom: 12px; text-align: center;
+  }
+  .pattern-name { font-family: 'Bebas Neue', sans-serif; font-size: 24px; line-height: 1; margin-bottom: 4px; }
+  .pattern-desc { font-size: 11px; color: var(--text-dim); line-height: 1.5; }
+  .pattern-placeholder { color: var(--text-muted); font-size: 13px; text-align: center; padding: 12px 0; }
+
+  /* Growth */
+  .rp-growth-item {
+    padding: 8px 10px; border-radius: 5px; border: 1px solid var(--border);
+    background: var(--surface2); margin-bottom: 6px;
+  }
+  .rp-growth-name { font-weight: 600; font-size: 11px; }
+  .rp-growth-score { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--text-muted); }
+
+  /* Archetype guidance */
+  .guidance-card {
+    padding: 12px; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--surface2); margin-bottom: 6px;
+  }
+  .guidance-label { font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 3px; }
+  .guidance-text { font-size: 11px; color: var(--text-dim); line-height: 1.5; }
+
+  /* Buttons */
+  .rp-btn-row { display: flex; gap: 8px; margin-top: 16px; }
+  .btn {
+    font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 1.5px;
+    text-transform: uppercase; padding: 8px 16px; border-radius: 4px; cursor: pointer;
+    transition: all 0.3s; flex: 1; text-align: center;
+  }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
+  .btn-ghost:hover { border-color: var(--teal); color: var(--teal); }
+  .btn-fill { background: var(--teal); border: 1px solid var(--teal); color: #fff; }
+  .btn-fill:hover { background: #00ccb3; }
+
+  .footer { text-align: center; padding-top: 24px; border-top: 1px solid var(--border); margin-top: 36px; }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 2px; color: var(--text-muted); }
+  .footer-sub { font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); opacity: 0.5; }
+
+  @media print {
+    body { background: #fff; color: #111; }
+    .grain, .theme-toggle { display: none; }
+    .shell { display: block; }
+    .sidebar { display: none; }
+    .mobile-results { display: block !important; }
+    .main { max-width: 100%; padding: 20px; }
+    .card, .cs-block, .rp-stat, .cs-rank-item, .rp-growth-item, .guidance-card, .pattern-card { background: #fafafa; border-color: #ddd; break-inside: avoid; }
+    .dot.filled, .rev-btn.selected, .arch-pill.selected { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    h1 { -webkit-text-fill-color: #111; background: none; }
+    h1 span { -webkit-text-fill-color: #0a8c7a; background: none; }
+    .btn { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div id="app"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useCallback, useMemo, useEffect } = React;
+
+/* ══════════════════════════════════════
+   SKIN: THEME TOGGLE
+   ══════════════════════════════════════ */
+
+function ThemeToggle() {
+  const [isDark, setIsDark] = useState(() =>
+    window.matchMedia('(prefers-color-scheme: dark)').matches
+  );
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
+  return (
+    <button className="theme-toggle" onClick={() => setIsDark(p => !p)} aria-label="Toggle theme">
+      <div className="track">
+        <span className="icon">{'\u263E'}</span>
+        <span className="icon">{'\u2600'}</span>
+        <div className={`knob ${isDark ? 'dark' : 'light'}`} />
+      </div>
+    </button>
+  );
+}
+
+/* ══════════════════════════════════════
+   ENGINE: DATA MODELS
+   ══════════════════════════════════════ */
+
+const REVIEWER_TYPES = [
+  { id: 'self', label: 'Self-Assessment' },
+  { id: 'peer', label: 'Peer Review' },
+  { id: 'mentor', label: 'Mentor / Leader' },
+];
+
+const ARCHETYPES = [
+  { id: 'storyteller', name: 'Storyteller', color: '#FF3C64', glow: 'rgba(255,60,100,0.12)' },
+  { id: 'systems', name: 'Systems Architect', color: '#00D4FF', glow: 'rgba(0,212,255,0.12)' },
+  { id: 'brand', name: 'Brand Worldbuilder', color: '#FFB800', glow: 'rgba(255,184,0,0.12)' },
+  { id: 'interaction', name: 'Interaction Crafter', color: '#A855F7', glow: 'rgba(168,85,247,0.12)' },
+  { id: 'service', name: 'Service Designer', color: '#34D399', glow: 'rgba(52,211,153,0.12)' },
+  { id: 'strategist', name: 'Research Strategist', color: '#F472B6', glow: 'rgba(244,114,182,0.12)' },
+  { id: 'technologist', name: 'Creative Technologist', color: '#FB923C', glow: 'rgba(251,146,60,0.12)' },
+];
+
+const PORTFOLIO_GUIDANCE = {
+  storyteller: { strength: 'Narrative arc and emotional resonance across case studies', watch_for: 'Portfolio should feel like an experience, not just a container', emphasis: 'Process reads like a story \u2014 setup, tension, resolution' },
+  systems: { strength: 'Before/after clarity showing complexity made navigable', watch_for: 'Dense information needs a guiding narrative', emphasis: 'Data visualization, information hierarchy, scalability evidence' },
+  brand: { strength: 'Visual cohesion \u2014 the portfolio itself is a brand artifact', watch_for: 'Every detail should feel intentional and unified', emphasis: 'Show the whole world: logo, type, color, packaging, motion' },
+  interaction: { strength: 'Prototypes and interaction details front and center', watch_for: 'Static screenshots undersell this archetype \u2014 video is essential', emphasis: 'Micro-interactions, state transitions, responsiveness' },
+  service: { strength: 'Journey maps and ecosystem diagrams showing the big picture', watch_for: 'Can feel abstract without real human stories', emphasis: 'End-to-end journey, stakeholder maps, before/after flows' },
+  strategist: { strength: 'Insight frameworks and evidence of changing what gets built', watch_for: 'Can feel text-heavy \u2014 needs visual anchors', emphasis: 'Problem reframing, research methodology, impact on direction' },
+  technologist: { strength: 'Live demos and interactive prototypes', watch_for: 'Technical impressiveness without user context feels like a tech demo', emphasis: 'Creative use of technology in service of design goals' },
+};
+
+const SHELL_DIMS = [
+  { id: 'first_impression', name: 'First Impression', desc: 'Strong visual impact in the first 5 seconds', icon: '\u2728', color: '#ff4d6a', glow: 'rgba(255,77,106,0.12)' },
+  { id: 'navigation', name: 'Navigation & Structure', desc: 'Clear IA, logical hierarchy, easy to find things', icon: '\uD83D\uDDFA\uFE0F', color: '#ff8a4d', glow: 'rgba(255,138,77,0.12)' },
+  { id: 'about_story', name: 'About & Personal Brand', desc: 'Clear personality, positioning, memorable voice', icon: '\uD83D\uDC64', color: '#ffc645', glow: 'rgba(255,198,69,0.12)' },
+  { id: 'visual_quality', name: 'Visual Design Quality', desc: 'Typography, spacing, color, imagery craft', icon: '\uD83C\uDFA8', color: '#4ddb6a', glow: 'rgba(77,219,106,0.12)' },
+  { id: 'responsiveness', name: 'Responsiveness & A11y', desc: 'Cross-device, fast, keyboard navigable', icon: '\u267F', color: '#00e5c7', glow: 'rgba(0,229,199,0.12)' },
+  { id: 'writing_quality', name: 'Writing & Copy', desc: 'Clear, concise, confident, error-free', icon: '\u270D\uFE0F', color: '#38bdf8', glow: 'rgba(56,189,248,0.12)' },
+  { id: 'contact_cta', name: 'Contact & CTA', desc: 'Clear next step, easy to reach, inviting', icon: '\uD83D\uDCEC', color: '#818cf8', glow: 'rgba(129,140,248,0.12)' },
+  { id: 'loading_perf', name: 'Performance & Polish', desc: 'Fast loading, zero broken links, feels finished', icon: '\u26A1', color: '#a78bfa', glow: 'rgba(167,139,250,0.12)' },
+];
+
+const CS_DIMS = [
+  { id: 'problem_framing', name: 'Problem Framing', desc: 'Challenge clearly stated with context and stakes' },
+  { id: 'process_depth', name: 'Process & Methodology', desc: 'Evidence of research, ideation, iteration, testing' },
+  { id: 'storytelling', name: 'Narrative & Flow', desc: 'Coherent story with beginning, middle, end' },
+  { id: 'outcomes', name: 'Outcomes & Impact', desc: 'Metrics, feedback, or reflection on results' },
+  { id: 'visual_execution', name: 'Visual Execution', desc: 'Work is well-crafted and presented with care' },
+  { id: 'role_clarity', name: 'Role & Contribution', desc: 'Clear what this designer specifically did' },
+];
+
+const STRAT_DIMS = [
+  { id: 'variety', name: 'Range & Variety', desc: 'Breadth of project types, industries, problem spaces', icon: '\uD83C\uDF10', color: '#f472b6', glow: 'rgba(244,114,182,0.12)' },
+  { id: 'depth_vs_breadth', name: 'Depth vs. Breadth', desc: 'Right number of projects at the right depth', icon: '\u2696\uFE0F', color: '#fb7185', glow: 'rgba(251,113,133,0.12)' },
+  { id: 'recency', name: 'Recency & Relevance', desc: 'Work is current, reflects present abilities', icon: '\uD83D\uDD52', color: '#ff4d6a', glow: 'rgba(255,77,106,0.12)' },
+  { id: 'target_audience', name: 'Audience Awareness', desc: 'Clearly positioned for a target role or company type', icon: '\uD83C\uDFAF', color: '#ff8a4d', glow: 'rgba(255,138,77,0.12)' },
+  { id: 'differentiation', name: 'Differentiation', desc: 'Stands out from thousands of other portfolios', icon: '\uD83D\uDC8E', color: '#ffc645', glow: 'rgba(255,198,69,0.12)' },
+];
+
+const CS_COLORS = ['#ffc645','#00e5c7','#818cf8','#ff8a4d','#f472b6','#38bdf8'];
+
+/* ══════════════════════════════════════
+   ENGINE: ALGORITHMS
+   ══════════════════════════════════════ */
+
+function classifyCaseStudy(total) {
+  if (total >= 25) return { label: 'Standout', tier: 'A', color: '#4ddb6a' };
+  if (total >= 20) return { label: 'Solid', tier: 'B', color: '#00e5c7' };
+  if (total >= 15) return { label: 'Needs Work', tier: 'C', color: '#ffc645' };
+  if (total >= 10) return { label: 'Weak', tier: 'D', color: '#ff8a4d' };
+  return { label: 'Consider Removing', tier: 'F', color: '#ff4d6a' };
+}
+
+function detectPattern(shellTotal, csAvg, stratTotal, dimAvgs) {
+  if (shellTotal >= 34 && csAvg >= 25 && stratTotal >= 21) return { name: 'Portfolio Ready', desc: 'Competitive asset. Focus on keeping it current.', color: '#4ddb6a', glow: 'rgba(77,219,106,0.12)' };
+  if (shellTotal >= 28 && csAvg >= 20 && stratTotal >= 18) return { name: 'Strong Foundation', desc: 'Solid across the board \u2014 ready for targeted polish.', color: '#00e5c7', glow: 'rgba(0,229,199,0.12)' };
+  if (shellTotal >= 32 && csAvg <= 18) return { name: 'All Sizzle, No Steak', desc: 'Beautiful shell, but case studies lack depth.', color: '#ffc645', glow: 'rgba(255,198,69,0.12)' };
+  if (shellTotal <= 24 && csAvg >= 22) return { name: 'Buried Treasure', desc: 'Strong case studies hidden behind a weak shell.', color: '#818cf8', glow: 'rgba(129,140,248,0.12)' };
+  if (dimAvgs.outcomes <= 2 && csAvg > 0) return { name: 'No Proof of Impact', desc: 'Good process but outcomes are missing.', color: '#ff8a4d', glow: 'rgba(255,138,77,0.12)' };
+  if (dimAvgs.variety <= 2 && stratTotal > 0) return { name: 'One-Trick Portfolio', desc: 'Low variety \u2014 all projects look the same.', color: '#f472b6', glow: 'rgba(244,114,182,0.12)' };
+  if (dimAvgs.recency <= 2 && stratTotal > 0) return { name: 'The Graveyard', desc: 'Work is outdated and doesn\u2019t reflect current ability.', color: '#fb7185', glow: 'rgba(251,113,133,0.12)' };
+  if (dimAvgs.target_audience <= 2 && dimAvgs.differentiation <= 2 && stratTotal > 0) return { name: 'Identity Crisis', desc: 'No clear audience or positioning.', color: '#a78bfa', glow: 'rgba(167,139,250,0.12)' };
+  return null;
+}
+
+/* ══════════════════════════════════════
+   SKIN: COMPONENTS
+   ══════════════════════════════════════ */
+
+function RatingDots({ id, value, color, glow, onRate, low, high }) {
+  return (
+    <div className="rating">
+      <span className="rating-label">{low||'Weak'}</span>
+      <div className="dots">
+        {[1,2,3,4,5].map(n => (
+          <button key={n} className={`dot${value >= n ? ' filled' : ''}`}
+            style={{ '--dot-color': color, '--dot-glow': glow }}
+            onClick={() => onRate(id, value === n ? 0 : n)}>
+            <span className="dot-num">{n}</span>
+          </button>
+        ))}
+      </div>
+      <span className="rating-label end">{high||'Strong'}</span>
+      <div className={`score-val${value ? ' visible' : ''}`} style={{ color }}>{value || ''}</div>
+    </div>
+  );
+}
+
+function SmallDots({ id, value, color, glow, onRate }) {
+  return (
+    <div className="cs-rating">
+      <div className="dots">
+        {[1,2,3,4,5].map(n => (
+          <button key={n} className={`dot${value >= n ? ' filled' : ''}`}
+            style={{ '--dot-color': color||'#ffc645', '--dot-glow': glow||'rgba(255,198,69,0.12)' }}
+            onClick={() => onRate(id, value === n ? 0 : n)}>
+            <span className="dot-num">{n}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ProgressRing({ pct, color, size = 100 }) {
+  const stroke = 5, r = (size - stroke * 2) / 2, circ = 2 * Math.PI * r;
+  const offset = circ - (pct / 100) * circ;
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--border)" strokeWidth={stroke} />
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color||'var(--teal)'} strokeWidth={stroke}
+        strokeDasharray={circ} strokeDashoffset={offset} strokeLinecap="round"
+        transform={`rotate(-90 ${size/2} ${size/2})`} style={{ transition: 'stroke-dashoffset 0.6s ease' }} />
+      <text x={size/2} y={size/2 - 6} textAnchor="middle" dominantBaseline="middle"
+        fill={color||'var(--teal)'} fontFamily="Bebas Neue, sans-serif" fontSize="28">{pct}</text>
+      <text x={size/2} y={size/2 + 12} textAnchor="middle" dominantBaseline="middle"
+        fill="var(--text-muted)" fontFamily="Space Mono, monospace" fontSize="8">/ 100</text>
+    </svg>
+  );
+}
+
+/* ══════════════════════════════════════
+   RESULTS PANEL
+   ══════════════════════════════════════ */
+
+function ResultsPanel({ designerName, reviewerType, archetype, shellScores, caseStudies, strategyScores, onReset }) {
+  const shellTotal = SHELL_DIMS.reduce((s, d) => s + (shellScores[d.id]||0), 0);
+  const stratTotal = STRAT_DIMS.reduce((s, d) => s + (strategyScores[d.id]||0), 0);
+
+  const csScores = caseStudies.map(cs => {
+    const t = CS_DIMS.reduce((s, d) => s + (cs.scores[d.id]||0), 0);
+    return { ...cs, total: t, pct: Math.round((t/30)*100), ...classifyCaseStudy(t) };
+  });
+  const csAvg = csScores.length > 0 ? csScores.reduce((s, c) => s + c.total, 0) / csScores.length : 0;
+  const ranked = [...csScores].sort((a, b) => b.total - a.total);
+
+  const grandTotal = shellTotal + Math.round(csAvg) + stratTotal;
+  const grandMax = 95;
+  const pct = Math.round((grandTotal / grandMax) * 100);
+
+  const dimAvgs = {};
+  CS_DIMS.forEach(d => {
+    const vals = caseStudies.map(cs => cs.scores[d.id]||0).filter(v => v > 0);
+    dimAvgs[d.id] = vals.length > 0 ? vals.reduce((a,b) => a+b, 0) / vals.length : 0;
+  });
+  STRAT_DIMS.forEach(d => { dimAvgs[d.id] = strategyScores[d.id]||0; });
+
+  const totalRated = SHELL_DIMS.filter(d => shellScores[d.id] > 0).length
+    + STRAT_DIMS.filter(d => strategyScores[d.id] > 0).length
+    + caseStudies.reduce((s, cs) => s + CS_DIMS.filter(d => cs.scores[d.id] > 0).length, 0);
+  const pattern = totalRated >= 10 ? detectPattern(shellTotal, csAvg, stratTotal, dimAvgs) : null;
+
+  const growthAreas = [
+    ...SHELL_DIMS.map(d => ({ name: d.name, score: shellScores[d.id]||0, sec: 'Shell' })),
+    ...STRAT_DIMS.map(d => ({ name: d.name, score: strategyScores[d.id]||0, sec: 'Strategy' })),
+    ...CS_DIMS.map(d => ({ name: d.name, score: Math.round(dimAvgs[d.id]*10)/10, sec: 'Case Studies' })),
+  ].sort((a, b) => a.score - b.score).slice(0, 3);
+
+  const guide = archetype ? PORTFOLIO_GUIDANCE[archetype] : null;
+  const arcObj = archetype ? ARCHETYPES.find(a => a.id === archetype) : null;
+  const sections = [
+    { label: 'Shell', score: shellTotal, max: 40, color: '#00e5c7' },
+    { label: 'Case Studies', score: Math.round(csAvg), max: 30, color: '#ffc645' },
+    { label: 'Strategy', score: stratTotal, max: 25, color: '#818cf8' },
+  ];
+
+  return (
+    <div className="results-panel">
+      <div className="rp-gradient-bar" />
+      <div className="rp-tag">Portfolio Assessment</div>
+      {designerName && <div style={{ textAlign: 'center', fontWeight: 600, fontSize: 16, marginBottom: 8 }}>{designerName}</div>}
+
+      <div className="progress-ring-wrap">
+        <ProgressRing pct={pct} color={pattern ? pattern.color : '#00e5c7'} />
+        <div className="progress-ring-label">{grandTotal} / {grandMax} points</div>
+      </div>
+
+      {/* Pattern */}
+      {pattern ? (
+        <div className="pattern-card" style={{ borderColor: pattern.color + '40', background: pattern.glow }}>
+          <div className="pattern-name" style={{ color: pattern.color }}>{pattern.name}</div>
+          <div className="pattern-desc">{pattern.desc}</div>
+        </div>
+      ) : (
+        <div className="pattern-placeholder">{totalRated < 10 ? 'Rate more dimensions for a diagnosis' : 'Keep going\u2026'}</div>
+      )}
+
+      {/* Section stats */}
+      <div className="rp-stats">
+        {sections.map(s => (
+          <div className="rp-stat" key={s.label}>
+            <div className="rp-stat-num" style={{ color: s.color }}>{s.score}<span className="rp-stat-max">/{s.max}</span></div>
+            <div className="rp-stat-label">{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Shell bars */}
+      <div className="rp-section-title">Portfolio Shell</div>
+      {SHELL_DIMS.map(d => {
+        const v = shellScores[d.id]||0;
+        return (
+          <div className="rp-bar-row" key={d.id}>
+            <span className="rp-bar-label">{d.name}</span>
+            <div className="rp-bar-track"><div className="rp-bar-fill" style={{ width: `${(v/5)*100}%`, background: d.color, opacity: v ? 0.8 : 0.1 }} /></div>
+            <span className="rp-bar-val" style={{ color: v ? d.color : 'var(--text-muted)' }}>{v||'\u2014'}</span>
+          </div>
+        );
+      })}
+
+      {/* Case study ranking */}
+      {ranked.length > 0 && (
+        <>
+          <div className="rp-section-title">Case Study Ranking</div>
+          {ranked.map((cs, i) => (
+            <div className="cs-rank-item" key={cs.id}>
+              <div className="cs-rank-num" style={{ color: cs.color }}>{i + 1}</div>
+              <div className="cs-rank-info">
+                <div className="cs-rank-name">{cs.name || 'Untitled'}</div>
+                <div className="cs-rank-score">{cs.total}/30 \u00B7 {cs.pct}%</div>
+              </div>
+              <div className="cs-rank-tier" style={{ color: cs.color, borderColor: cs.color + '40', background: cs.color + '15' }}>{cs.label}</div>
+            </div>
+          ))}
+        </>
+      )}
+
+      {/* Strategy bars */}
+      <div className="rp-section-title">Strategy</div>
+      {STRAT_DIMS.map(d => {
+        const v = strategyScores[d.id]||0;
+        return (
+          <div className="rp-bar-row" key={d.id}>
+            <span className="rp-bar-label">{d.name}</span>
+            <div className="rp-bar-track"><div className="rp-bar-fill" style={{ width: `${(v/5)*100}%`, background: d.color, opacity: v ? 0.8 : 0.1 }} /></div>
+            <span className="rp-bar-val" style={{ color: v ? d.color : 'var(--text-muted)' }}>{v||'\u2014'}</span>
+          </div>
+        );
+      })}
+
+      {/* Growth areas */}
+      {totalRated > 0 && (
+        <>
+          <div className="rp-section-title">Top Growth Areas</div>
+          {growthAreas.map(g => (
+            <div className="rp-growth-item" key={g.name}>
+              <div className="rp-growth-name">{g.name}</div>
+              <div className="rp-growth-score">{g.sec} \u00B7 {g.score}/5</div>
+            </div>
+          ))}
+        </>
+      )}
+
+      {/* Archetype guidance */}
+      {guide && arcObj && (
+        <>
+          <div className="rp-section-title" style={{ color: arcObj.color }}>Guidance for {arcObj.name}</div>
+          <div className="guidance-card"><div className="guidance-label">Strength to show</div><div className="guidance-text">{guide.strength}</div></div>
+          <div className="guidance-card"><div className="guidance-label">Watch for</div><div className="guidance-text">{guide.watch_for}</div></div>
+          <div className="guidance-card"><div className="guidance-label">Case study emphasis</div><div className="guidance-text">{guide.emphasis}</div></div>
+        </>
+      )}
+
+      <div className="rp-btn-row">
+        <button className="btn btn-ghost" onClick={onReset}>Reset</button>
+        <button className="btn btn-fill" onClick={() => window.print()}>Print</button>
+      </div>
+      <div className="footer">
+        <div className="footer-logo">Jacksonville Design Community</div>
+        <div className="footer-sub">Portfolio Assessment \u00B7 {new Date().getFullYear()}</div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════
+   APP
+   ══════════════════════════════════════ */
+
+function App() {
+  const [designerName, setDesignerName] = useState('');
+  const [reviewerName, setReviewerName] = useState('');
+  const [reviewerType, setReviewerType] = useState(null);
+  const [archetype, setArchetype] = useState(null);
+  const [shellScores, setShellScores] = useState({});
+  const [caseStudies, setCaseStudies] = useState([{ id: 'cs_1', name: '', scores: {} }]);
+  const [strategyScores, setStrategyScores] = useState({});
+  const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  let csCounter = React.useRef(1);
+
+  const handleShellRate = useCallback((id, val) => setShellScores(p => ({ ...p, [id]: val })), []);
+  const handleStratRate = useCallback((id, val) => setStrategyScores(p => ({ ...p, [id]: val })), []);
+
+  const handleCsRate = useCallback((csId, dimId, val) => {
+    setCaseStudies(prev => prev.map(cs =>
+      cs.id === csId ? { ...cs, scores: { ...cs.scores, [dimId]: val } } : cs
+    ));
+  }, []);
+
+  const handleCsName = useCallback((csId, name) => {
+    setCaseStudies(prev => prev.map(cs => cs.id === csId ? { ...cs, name } : cs));
+  }, []);
+
+  const addCaseStudy = () => {
+    if (caseStudies.length >= 6) return;
+    csCounter.current += 1;
+    setCaseStudies(prev => [...prev, { id: 'cs_' + csCounter.current, name: '', scores: {} }]);
+  };
+
+  const removeCaseStudy = (csId) => {
+    if (caseStudies.length <= 1) return;
+    setCaseStudies(prev => prev.filter(cs => cs.id !== csId));
+  };
+
+  const handleReset = () => {
+    setDesignerName(''); setReviewerName(''); setReviewerType(null); setArchetype(null);
+    setShellScores({}); setCaseStudies([{ id: 'cs_1', name: '', scores: {} }]); setStrategyScores({});
+    csCounter.current = 1;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const resultsProps = { designerName, reviewerType, archetype, shellScores, caseStudies, strategyScores, onReset: handleReset };
+
+  return (
+    <div className="shell">
+      <ThemeToggle />
+      <div className="main">
+        <div className="header">
+          <div className="tag">Workshop Activity</div>
+          <h1>PORTFOLIO<span>SCORECARD</span></h1>
+          <p className="subtitle">Evaluate a design portfolio \u2014 the site, the case studies, and the strategy behind the collection. Works for self-review, peer feedback, or mentor critique.</p>
+        </div>
+
+        {/* Meta */}
+        <div className="meta-row">
+          <span className="meta-label">Portfolio</span>
+          <input className="meta-input" type="text" placeholder="Designer name" value={designerName} onChange={e => setDesignerName(e.target.value)} />
+          <span className="meta-label">Reviewer</span>
+          <input className="meta-input" type="text" placeholder="Your name" value={reviewerName} onChange={e => setReviewerName(e.target.value)} />
+          <span className="date-display">{today}</span>
+        </div>
+
+        {/* Reviewer type + archetype */}
+        <div className="section">
+          <div className="section-header">
+            <div className="section-num" style={{ background: 'var(--teal-glow)', color: 'var(--teal)' }}>00</div>
+            <div>
+              <div className="section-title">Context</div>
+              <div className="section-subtitle">Who are you, and what type of designer owns this portfolio?</div>
+            </div>
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-dim)', marginBottom: 8, fontWeight: 500 }}>Review type</div>
+            <div className="reviewer-row">
+              {REVIEWER_TYPES.map(r => (
+                <button key={r.id} className={`rev-btn${reviewerType === r.id ? ' selected' : ''}`}
+                  onClick={() => setReviewerType(reviewerType === r.id ? null : r.id)}>{r.label}</button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div style={{ fontSize: 12, color: 'var(--text-dim)', marginBottom: 8, fontWeight: 500 }}>Designer archetype <span style={{ color: 'var(--text-muted)', fontWeight: 300 }}>(optional)</span></div>
+            <div className="arch-row">
+              {ARCHETYPES.map(a => (
+                <button key={a.id} className={`arch-pill${archetype === a.id ? ' selected' : ''}`}
+                  style={archetype === a.id ? { borderColor: a.color + '60', background: a.glow, color: a.color } : {}}
+                  onClick={() => setArchetype(archetype === a.id ? null : a.id)}>
+                  <span className="arch-dot" style={{ background: a.color }} />{a.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* S1: Portfolio Shell */}
+        <div className="section">
+          <div className="section-header">
+            <div className="section-num" style={{ background: 'var(--teal-glow)', color: 'var(--teal)' }}>01</div>
+            <div>
+              <div className="section-title">Portfolio Shell</div>
+              <div className="section-subtitle">The site itself \u2014 how it looks, feels, and functions as a container</div>
+            </div>
+          </div>
+          <div className="card-grid">
+            {SHELL_DIMS.map((dim, idx) => {
+              const val = shellScores[dim.id] || 0;
+              return (
+                <div key={dim.id} className={`card${val ? ' rated' : ''}`}
+                  style={{ '--card-glow': dim.glow, borderColor: val ? dim.color + '35' : undefined }}>
+                  <div className="card-num">{String(idx + 1).padStart(2, '0')}</div>
+                  <div className="card-icon" style={{ background: dim.glow, borderColor: dim.color + '30', color: dim.color }}>{dim.icon}</div>
+                  <div className="card-name">{dim.name}</div>
+                  <div className="card-desc">{dim.desc}</div>
+                  <RatingDots id={dim.id} value={val} color={dim.color} glow={dim.glow} onRate={handleShellRate} />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* S2: Case Studies */}
+        <div className="section">
+          <div className="section-header">
+            <div className="section-num" style={{ background: 'var(--amber-glow)', color: 'var(--amber)' }}>02</div>
+            <div>
+              <div className="section-title">Case Studies</div>
+              <div className="section-subtitle">Rate each case study individually \u2014 add up to 6</div>
+            </div>
+          </div>
+          {caseStudies.map((cs, csIdx) => {
+            const csColor = CS_COLORS[csIdx % CS_COLORS.length];
+            const csGlow = csColor + '18';
+            const csTotal = CS_DIMS.reduce((s, d) => s + (cs.scores[d.id]||0), 0);
+            return (
+              <div key={cs.id} className="cs-block" style={csTotal > 0 ? { borderColor: csColor + '30' } : {}}>
+                <div className="cs-header">
+                  <div className="cs-number" style={csTotal > 0 ? { color: csColor, background: csColor + '15' } : {}}>{csIdx + 1}</div>
+                  <input className="cs-name-input" type="text" placeholder={`Case study ${csIdx + 1} name\u2026`}
+                    value={cs.name} onChange={e => handleCsName(cs.id, e.target.value)} />
+                  {caseStudies.length > 1 && <button className="cs-remove" onClick={() => removeCaseStudy(cs.id)}>&times;</button>}
+                </div>
+                <div className="cs-dims">
+                  {CS_DIMS.map(dim => (
+                    <div className="cs-dim-row" key={dim.id}>
+                      <div className="cs-dim-info">
+                        <div className="cs-dim-name">{dim.name}</div>
+                        <div className="cs-dim-desc">{dim.desc}</div>
+                      </div>
+                      <SmallDots id={dim.id} value={cs.scores[dim.id]||0} color={csColor} glow={csGlow}
+                        onRate={(dimId, val) => handleCsRate(cs.id, dimId, val)} />
+                    </div>
+                  ))}
+                </div>
+                {csTotal > 0 && (
+                  <div style={{ marginTop: 10, textAlign: 'right' }}>
+                    <span style={{ fontFamily: 'Space Mono, monospace', fontSize: 10, color: csColor }}>{csTotal}/30</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+          <button className="add-cs-btn" onClick={addCaseStudy} disabled={caseStudies.length >= 6}>
+            + Add Case Study {caseStudies.length >= 6 && '(max 6)'}
+          </button>
+        </div>
+
+        {/* S3: Strategy */}
+        <div className="section">
+          <div className="section-header">
+            <div className="section-num" style={{ background: 'var(--indigo-glow)', color: 'var(--indigo)' }}>03</div>
+            <div>
+              <div className="section-title">Portfolio Strategy</div>
+              <div className="section-subtitle">The collection as a whole \u2014 editorial choices and positioning</div>
+            </div>
+          </div>
+          <div className="card-grid">
+            {STRAT_DIMS.map((dim, idx) => {
+              const val = strategyScores[dim.id] || 0;
+              return (
+                <div key={dim.id} className={`card${val ? ' rated' : ''}`}
+                  style={{ '--card-glow': dim.glow, borderColor: val ? dim.color + '35' : undefined }}>
+                  <div className="card-num">{String(idx + 1).padStart(2, '0')}</div>
+                  <div className="card-icon" style={{ background: dim.glow, borderColor: dim.color + '30', color: dim.color }}>{dim.icon}</div>
+                  <div className="card-name">{dim.name}</div>
+                  <div className="card-desc">{dim.desc}</div>
+                  <RatingDots id={dim.id} value={val} color={dim.color} glow={dim.glow} onRate={handleStratRate} />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mobile-results"><ResultsPanel {...resultsProps} /></div>
+      </div>
+      <div className="sidebar"><ResultsPanel {...resultsProps} /></div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+</script>
+</body>
+</html>
