@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Know Your Economic Landscape</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f2ec;
+    --bg-card: #ffffff;
+    --text: #1a1a1a;
+    --text-muted: #6b6b6b;
+    --text-dim: #999;
+    --border: rgba(0,0,0,0.12);
+    --accent: #534AB7;
+    --accent-light: #EEEDFE;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141413;
+      --bg-card: #1e1e1c;
+      --text: #e8e6de;
+      --text-muted: #9c9a92;
+      --text-dim: #5f5e5a;
+      --border: rgba(255,255,255,0.1);
+      --accent: #CECBF6;
+      --accent-light: #2a2848;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page { max-width: 800px; margin: 0 auto; padding: 4rem 1.5rem 6rem; }
+
+  .hero {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding: 3rem 0;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+  }
+  .hero h1 {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: clamp(36px, 6vw, 56px);
+    font-weight: 400;
+    line-height: 1.15;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.5px;
+  }
+  .hero p {
+    font-size: 17px;
+    color: var(--text-muted);
+    max-width: 540px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  .prose {
+    max-width: 620px;
+    margin: 0 auto 3rem;
+    font-size: 16px;
+    color: var(--text-muted);
+    line-height: 1.8;
+  }
+  .prose p { margin-bottom: 1.25rem; }
+  .prose strong { color: var(--text); font-weight: 500; }
+  .prose em { font-style: italic; color: var(--text); }
+
+  .callout {
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 1.25rem 1.5rem;
+    margin: 2.5rem auto;
+    max-width: 620px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    max-width: 620px;
+    margin: 0 auto 0.75rem;
+  }
+  .section-title {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-size: clamp(26px, 4vw, 36px);
+    font-weight: 400;
+    max-width: 620px;
+    margin: 0 auto 2rem;
+    letter-spacing: -0.3px;
+  }
+
+  .network-card {
+    background: var(--bg-card);
+    border-radius: 12px;
+    border: 0.5px solid var(--border);
+    padding: 1.5rem;
+    margin-bottom: 3rem;
+  }
+  .network-card h2 {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+  .controls { display: flex; gap: 6px; flex-wrap: wrap; margin: 0 0 1rem; }
+  .controls button {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-size: 11px;
+    padding: 4px 10px;
+    cursor: pointer;
+    background: transparent;
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    transition: all 0.15s;
+  }
+  .controls button:hover { background: var(--bg); }
+  .controls button.active { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: var(--text-muted); margin-top: 12px; }
+  .legend span { display: flex; align-items: center; gap: 4px; }
+  .legend i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .node-g { cursor: pointer; transition: opacity 0.3s; }
+  .node-g:hover { opacity: 0.85; }
+  .edge { transition: opacity 0.3s, stroke-width 0.3s; }
+  .flow-label { pointer-events: none; }
+  .dimmed { opacity: 0.12; }
+  .highlighted { opacity: 1; }
+
+  .divider {
+    width: 40px;
+    height: 0.5px;
+    background: var(--border);
+    margin: 4rem auto;
+  }
+
+  .footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 0.5px solid var(--border);
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="hero">
+    <div class="hero-eyebrow">Understanding your city</div>
+    <h1>Know your economic landscape</h1>
+    <p>Every city is a living network of institutions, capital, talent, and influence. Understanding how it works is the first step toward contributing to it.</p>
+  </header>
+
+  <div class="prose">
+    <p><strong>How could you contribute to your economy?</strong> You might not directly participate in every node of this network — you probably aren't running a port, sitting on a zoning board, or managing a hospital system. But you live inside this web of relationships whether you see it or not.</p>
+    <p>The money that pays for your roads came from somewhere. The job you work exists because of decisions made by people in these networks. The restaurant you love survives because of foot traffic created by development patterns, tourism flows, and institutional anchors.</p>
+    <p><em>Go visit these places.</em> Walk through your downtown. Drive past the port. Sit in on a city council meeting. Tour the college campus. Eat at the businesses on the main corridor. See who's building what, and where the cranes are. Watch where the people flow.</p>
+  </div>
+
+  <div class="callout">
+    You don't need to be a mover and shaker to matter. But you should develop respect for the economic network of where you live — because once you see how the pieces connect, you start to notice where you fit, where you could help, and where the gaps are.
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-label">Network 01</div>
+  <div class="section-title">Jacksonville, Florida</div>
+
+  <div class="network-card">
+    <h2>Jacksonville economic &amp; socioeconomic network</h2>
+    <div class="controls" id="ctrl-jax"></div>
+    <svg id="net-jax" width="100%" viewBox="0 0 680 520">
+      <defs>
+        <marker id="arrow-jax" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <g id="edges-jax"></g>
+      <g id="nodes-jax"></g>
+    </svg>
+    <div class="legend" id="legend-jax"></div>
+  </div>
+
+  <div class="prose">
+    <p>Jacksonville's economy is anchored by <strong>three pillars</strong>: the military (Naval Station Mayport), healthcare (Mayo Clinic), and financial services (FIS, Black Knight). These base industries bring outside dollars in, which then circulate through local businesses, real estate, and services.</p>
+    <p>Notice the <strong>network brokers</strong> at the center — the connectors who sit on multiple boards, bridge disconnected groups, and quietly shape which deals get done. In a city of nearly a million people, these structural bridges are what keep the network from fragmenting into silos.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-label">Network 02</div>
+  <div class="section-title">St. Augustine, Florida</div>
+
+  <div class="network-card">
+    <h2>St. Augustine economic &amp; socioeconomic network</h2>
+    <div class="controls" id="ctrl-sta"></div>
+    <svg id="net-sta" width="100%" viewBox="0 0 680 540">
+      <defs>
+        <marker id="arrow-sta" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+      <g id="edges-sta"></g>
+      <g id="nodes-sta"></g>
+    </svg>
+    <div class="legend" id="legend-sta"></div>
+  </div>
+
+  <div class="prose">
+    <p>St. Augustine tells a fundamentally different story. Here, <strong>tourism is the gravitational center</strong> — 7 million visitors a year pour money into hotels, tours, dining, and attractions. The bed tax loop (visitors → hotels → TDC marketing → more visitors) is the engine that keeps everything spinning.</p>
+    <p>The tension between <strong>preservation and development</strong> defines this city. HARB — the Historic Architectural Review Board — acts as a gate on every building project in the historic district. In a city of just 15,000 residents, the handful of people who sit on overlapping boards wield enormous quiet influence.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="prose" style="text-align:center; color: var(--text-dim); font-size: 15px;">
+    <p><em>Every city has a network like this. Learn yours.</em></p>
+  </div>
+
+  <div class="footer">Economic network maps — Jacksonville &amp; St. Augustine, FL</div>
+
+</div>
+
+<script>
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+
+function buildNetwork(config) {
+  const { categories, nodes, edges, ctrlId, edgesId, nodesId, legendId, arrowId } = config;
+  const nodeMap = {};
+  nodes.forEach(n => nodeMap[n.id] = n);
+
+  const leg = document.getElementById(legendId);
+  Object.entries(categories).forEach(([k, v]) => {
+    leg.innerHTML += `<span><i style="background:${v.color}"></i>${v.label}</span>`;
+  });
+
+  const ctrl = document.getElementById(ctrlId);
+  ctrl.innerHTML = '<button class="active" data-cat="all">All flows</button>';
+  Object.entries(categories).forEach(([k, v]) => {
+    ctrl.innerHTML += `<button data-cat="${k}">${v.label}</button>`;
+  });
+
+  const edgeG = document.getElementById(edgesId);
+  edges.forEach(e => {
+    const a = nodeMap[e.from], b = nodeMap[e.to];
+    const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+    const dx = b.x - a.x, dy = b.y - a.y;
+    const len = Math.sqrt(dx*dx + dy*dy) || 1;
+    const ox = -dy/len * 13, oy = dx/len * 13;
+    const cx = mx + ox, cy = my + oy;
+    const cat1 = categories[nodeMap[e.from].cat];
+    const col = dark ? cat1.text100 : cat1.color;
+    edgeG.innerHTML += `<path class="edge" data-from="${e.from}" data-to="${e.to}" d="M${a.x} ${a.y} Q${cx} ${cy} ${b.x} ${b.y}" fill="none" stroke="${col}" stroke-width="0.8" opacity="0.35" marker-end="url(#${arrowId})"/>`;
+    edgeG.innerHTML += `<text class="flow-label" x="${cx}" y="${cy - 5}" text-anchor="middle" opacity="0" font-size="11" fill="${dark ? '#9c9a92' : '#6b6b6b'}">${e.flow}</text>`;
+  });
+
+  const nodeG = document.getElementById(nodesId);
+  nodes.forEach(n => {
+    const cat = categories[n.cat];
+    const fill = dark ? cat.dark : cat.light;
+    const stroke = dark ? cat.text100 : cat.color;
+    const textCol = dark ? cat.text100 : cat.text800;
+    const lines = n.label.split('\n');
+    const w = Math.max(...lines.map(l => l.length)) * 8.2 + 28;
+    const h = lines.length > 1 ? 48 : 36;
+    let textEls = '';
+    if (lines.length === 1) {
+      textEls = `<text x="${n.x}" y="${n.y}" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="${textCol}" font-family="'DM Sans',system-ui,sans-serif">${lines[0]}</text>`;
+    } else {
+      textEls = `<text x="${n.x}" y="${n.y - 8}" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="${textCol}" font-family="'DM Sans',system-ui,sans-serif">${lines[0]}</text>`;
+      textEls += `<text x="${n.x}" y="${n.y + 10}" text-anchor="middle" dominant-baseline="central" font-size="11" fill="${textCol}" opacity="0.75" font-family="'DM Sans',system-ui,sans-serif">${lines[1]}</text>`;
+    }
+    nodeG.innerHTML += `<g class="node-g" data-id="${n.id}" data-cat="${n.cat}">
+      <rect x="${n.x - w/2}" y="${n.y - h/2}" width="${w}" height="${h}" rx="8" fill="${fill}" stroke="${stroke}" stroke-width="0.5"/>
+      ${textEls}
+    </g>`;
+  });
+
+  const allEdges = edgeG.querySelectorAll('.edge');
+  const allLabels = edgeG.querySelectorAll('.flow-label');
+  const allNodes = nodeG.querySelectorAll('.node-g');
+
+  function highlight(cat) {
+    if (cat === 'all') {
+      allEdges.forEach((e, i) => { e.classList.remove('dimmed','highlighted'); e.setAttribute('opacity','0.35'); e.setAttribute('stroke-width','0.8'); allLabels[i].setAttribute('opacity','0'); });
+      allNodes.forEach(n => n.classList.remove('dimmed','highlighted'));
+      return;
+    }
+    allNodes.forEach(n => {
+      n.classList.toggle('dimmed', n.dataset.cat !== cat);
+      n.classList.toggle('highlighted', n.dataset.cat === cat);
+    });
+    allEdges.forEach((e, i) => {
+      const fromCat = nodeMap[e.dataset.from].cat;
+      const toCat = nodeMap[e.dataset.to].cat;
+      const relevant = fromCat === cat || toCat === cat;
+      e.classList.toggle('dimmed', !relevant);
+      e.classList.toggle('highlighted', relevant);
+      e.setAttribute('opacity', relevant ? '0.7' : '0.08');
+      e.setAttribute('stroke-width', relevant ? '1.5' : '0.8');
+      allLabels[i].setAttribute('opacity', relevant ? '1' : '0');
+    });
+  }
+
+  ctrl.addEventListener('click', ev => {
+    if (ev.target.tagName !== 'BUTTON') return;
+    ctrl.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+    ev.target.classList.add('active');
+    highlight(ev.target.dataset.cat);
+  });
+}
+
+// ─── Jacksonville ───
+buildNetwork({
+  ctrlId: 'ctrl-jax', edgesId: 'edges-jax', nodesId: 'nodes-jax', legendId: 'legend-jax', arrowId: 'arrow-jax',
+  categories: {
+    anchor:   { label: 'Anchor institutions',    color: '#534AB7', light: '#EEEDFE', dark: '#3C3489', text800: '#3C3489', text100: '#CECBF6' },
+    capital:  { label: 'Capital allocators',      color: '#1D9E75', light: '#E1F5EE', dark: '#085041', text800: '#085041', text100: '#9FE1CB' },
+    civic:    { label: 'Civic/political leaders',  color: '#D85A30', light: '#FAECE7', dark: '#712B13', text800: '#712B13', text100: '#F5C4B3' },
+    base:     { label: 'Base industry (exports)',  color: '#378ADD', light: '#E6F1FB', dark: '#0C447C', text800: '#0C447C', text100: '#B5D4F4' },
+    local:    { label: 'Local-serving business',   color: '#639922', light: '#EAF3DE', dark: '#27500A', text800: '#27500A', text100: '#C0DD97' },
+    creative: { label: 'Creative class / talent',  color: '#D4537E', light: '#FBEAF0', dark: '#72243E', text800: '#72243E', text100: '#F4C0D1' },
+    broker:   { label: 'Network brokers',          color: '#BA7517', light: '#FAEEDA', dark: '#633806', text800: '#633806', text100: '#FAC775' },
+    community:{ label: 'Community orgs',           color: '#888780', light: '#F1EFE8', dark: '#444441', text800: '#444441', text100: '#D3D1C7' }
+  },
+  nodes: [
+    { id: 'navy',       cat: 'anchor',    label: 'Naval Station\nMayport',    x: 100, y: 80 },
+    { id: 'mayo',       cat: 'anchor',    label: 'Mayo Clinic\nJacksonville', x: 280, y: 60 },
+    { id: 'unf',        cat: 'anchor',    label: 'UNF / JU',                  x: 460, y: 80 },
+    { id: 'banks',      cat: 'capital',   label: 'Banks &\nfinancial firms',  x: 80,  y: 210 },
+    { id: 'developers', cat: 'capital',   label: 'Real estate\ndevelopers',   x: 560, y: 210 },
+    { id: 'mayor',      cat: 'civic',     label: 'Mayor &\ncity council',     x: 340, y: 190 },
+    { id: 'chamber',    cat: 'civic',     label: 'Chamber of\ncommerce',      x: 520, y: 340 },
+    { id: 'port',       cat: 'base',      label: 'JAXPORT\n(logistics)',      x: 100, y: 340 },
+    { id: 'finserv',    cat: 'base',      label: 'FIS / Black\nKnight (fintech)', x: 260, y: 310 },
+    { id: 'restaurants',cat: 'local',     label: 'Retail &\nrestaurants',     x: 430, y: 440 },
+    { id: 'services',   cat: 'local',     label: 'Local\nservices',           x: 250, y: 460 },
+    { id: 'talent',     cat: 'creative',  label: 'Tech workers\n& creatives', x: 560, y: 100 },
+    { id: 'brokers',    cat: 'broker',    label: 'Connectors\n& brokers',     x: 340, y: 360 },
+    { id: 'nonprofits', cat: 'community', label: 'Nonprofits\n& churches',    x: 100, y: 460 },
+  ],
+  edges: [
+    { from: 'navy',    to: 'mayor',      flow: 'Federal $' },
+    { from: 'navy',    to: 'services',    flow: 'Jobs & spending' },
+    { from: 'mayo',    to: 'talent',      flow: 'Attracts talent' },
+    { from: 'mayo',    to: 'banks',       flow: 'Institutional deposits' },
+    { from: 'unf',     to: 'talent',      flow: 'Graduates' },
+    { from: 'unf',     to: 'finserv',     flow: 'Research pipeline' },
+    { from: 'banks',   to: 'developers',  flow: 'Capital' },
+    { from: 'banks',   to: 'port',        flow: 'Trade finance' },
+    { from: 'developers', to: 'restaurants', flow: 'Creates foot traffic' },
+    { from: 'mayor',   to: 'developers',  flow: 'Zoning & incentives' },
+    { from: 'mayor',   to: 'port',        flow: 'Infrastructure $' },
+    { from: 'chamber', to: 'mayor',       flow: 'Lobbying' },
+    { from: 'chamber', to: 'finserv',     flow: 'Business climate' },
+    { from: 'port',    to: 'services',    flow: 'Supply chain jobs' },
+    { from: 'finserv', to: 'talent',      flow: 'High-paying jobs' },
+    { from: 'finserv', to: 'banks',       flow: 'Revenue' },
+    { from: 'talent',  to: 'restaurants', flow: 'Disposable income' },
+    { from: 'talent',  to: 'developers',  flow: 'Housing demand' },
+    { from: 'brokers', to: 'mayor',       flow: 'Access & intel' },
+    { from: 'brokers', to: 'chamber',     flow: 'Introductions' },
+    { from: 'brokers', to: 'banks',       flow: 'Deal flow' },
+    { from: 'brokers', to: 'talent',      flow: 'Opportunities' },
+    { from: 'nonprofits', to: 'services', flow: 'Workforce dev' },
+    { from: 'nonprofits', to: 'mayor',    flow: 'Community voice' },
+  ]
+});
+
+// ─── St. Augustine ───
+buildNetwork({
+  ctrlId: 'ctrl-sta', edgesId: 'edges-sta', nodesId: 'nodes-sta', legendId: 'legend-sta', arrowId: 'arrow-sta',
+  categories: {
+    anchor:      { label: 'Anchor institutions',     color: '#534AB7', light: '#EEEDFE', dark: '#3C3489', text800: '#3C3489', text100: '#CECBF6' },
+    capital:     { label: 'Capital & development',    color: '#1D9E75', light: '#E1F5EE', dark: '#085041', text800: '#085041', text100: '#9FE1CB' },
+    civic:       { label: 'Civic / government',       color: '#D85A30', light: '#FAECE7', dark: '#712B13', text800: '#712B13', text100: '#F5C4B3' },
+    tourism:     { label: 'Tourism economy (base)',    color: '#378ADD', light: '#E6F1FB', dark: '#0C447C', text800: '#0C447C', text100: '#B5D4F4' },
+    local:       { label: 'Local-serving business',    color: '#639922', light: '#EAF3DE', dark: '#27500A', text800: '#27500A', text100: '#C0DD97' },
+    creative:    { label: 'Creative class / arts',     color: '#D4537E', light: '#FBEAF0', dark: '#72243E', text800: '#72243E', text100: '#F4C0D1' },
+    broker:      { label: 'Network brokers',           color: '#BA7517', light: '#FAEEDA', dark: '#633806', text800: '#633806', text100: '#FAC775' },
+    preservation:{ label: 'Preservation orgs',         color: '#888780', light: '#F1EFE8', dark: '#444441', text800: '#444441', text100: '#D3D1C7' }
+  },
+  nodes: [
+    { id: 'flagler',     cat: 'anchor',       label: 'Flagler\nCollege',            x: 200, y: 70 },
+    { id: 'hospital',    cat: 'anchor',       label: 'Flagler\nHospital',           x: 400, y: 60 },
+    { id: 'statepark',   cat: 'anchor',       label: 'Castillo &\nstate parks',     x: 80,  y: 170 },
+    { id: 'realtors',    cat: 'capital',      label: 'Real estate\ndevelopers',      x: 570, y: 170 },
+    { id: 'hoteliers',   cat: 'capital',      label: 'Hotel &\nresort owners',      x: 560, y: 320 },
+    { id: 'county',      cat: 'civic',        label: 'St. Johns\nCounty gov',       x: 340, y: 190 },
+    { id: 'citycomm',    cat: 'civic',        label: 'City\ncommission',            x: 180, y: 210 },
+    { id: 'tdc',         cat: 'civic',        label: 'TDC (tourism\ndevelopment)',   x: 420, y: 320 },
+    { id: 'visitors',    cat: 'tourism',      label: 'Visitors\n(7M+ / year)',      x: 100, y: 340 },
+    { id: 'tours',       cat: 'tourism',      label: 'Tour operators\n& attractions',x: 260, y: 340 },
+    { id: 'stgeorge',    cat: 'local',        label: 'St. George St\nretail & dining',x: 260, y: 460 },
+    { id: 'beaches',     cat: 'local',        label: 'Beach\nbusinesses',           x: 460, y: 460 },
+    { id: 'artists',     cat: 'creative',     label: 'Artists &\nperformers',       x: 80,  y: 460 },
+    { id: 'brokers',     cat: 'broker',       label: 'Board sitters\n& connectors',  x: 420, y: 180 },
+    { id: 'sjchs',       cat: 'preservation', label: 'St. Augustine\nHistorical Soc',x: 80,  y: 80 },
+    { id: 'preserve',    cat: 'preservation', label: 'Historic dist.\nboard (HARB)', x: 540, y: 70 },
+  ],
+  edges: [
+    { from: 'visitors',  to: 'tours',       flow: 'Ticket revenue' },
+    { from: 'visitors',  to: 'stgeorge',    flow: 'Dining & shopping' },
+    { from: 'visitors',  to: 'hoteliers',   flow: 'Room revenue' },
+    { from: 'visitors',  to: 'statepark',   flow: 'Entry fees' },
+    { from: 'visitors',  to: 'beaches',     flow: 'Beach spending' },
+    { from: 'hoteliers', to: 'tdc',         flow: 'Bed tax (5%)' },
+    { from: 'tdc',       to: 'visitors',    flow: 'Marketing $ → more visitors' },
+    { from: 'tdc',       to: 'county',      flow: 'Funding reports' },
+    { from: 'tours',     to: 'artists',     flow: 'Performance gigs' },
+    { from: 'tours',     to: 'stgeorge',    flow: 'Foot traffic' },
+    { from: 'flagler',   to: 'artists',     flow: 'Graduates & culture' },
+    { from: 'flagler',   to: 'stgeorge',    flow: 'Student spending' },
+    { from: 'flagler',   to: 'citycomm',    flow: 'Community programs' },
+    { from: 'hospital',  to: 'county',      flow: 'Major employer' },
+    { from: 'hospital',  to: 'realtors',    flow: 'Worker housing demand' },
+    { from: 'county',    to: 'realtors',    flow: 'Zoning & permits' },
+    { from: 'county',    to: 'statepark',   flow: 'Infrastructure $' },
+    { from: 'citycomm',  to: 'preserve',    flow: 'Preservation policy' },
+    { from: 'preserve',  to: 'realtors',    flow: 'Design review gate' },
+    { from: 'sjchs',     to: 'tours',       flow: 'Historic narratives' },
+    { from: 'sjchs',     to: 'citycomm',    flow: 'Advocacy' },
+    { from: 'realtors',  to: 'beaches',     flow: 'New development' },
+    { from: 'realtors',  to: 'stgeorge',    flow: 'Commercial leases' },
+    { from: 'brokers',   to: 'county',      flow: 'Access & influence' },
+    { from: 'brokers',   to: 'hoteliers',   flow: 'Deal introductions' },
+    { from: 'brokers',   to: 'realtors',    flow: 'Investment leads' },
+    { from: 'brokers',   to: 'tdc',         flow: 'Strategy input' },
+    { from: 'artists',   to: 'stgeorge',    flow: 'Gallery & street art' },
+    { from: 'stgeorge',  to: 'citycomm',    flow: 'Sales tax revenue' },
+    { from: 'beaches',   to: 'county',      flow: 'Property tax base' },
+  ]
+});
+</script>
+</body>
+</html>
