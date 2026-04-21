@@ -1,0 +1,272 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .poster {
+    background: #0c1a14;
+    color: #e8ede6;
+    font-family: 'IBM Plex Mono', monospace;
+    padding: 48px 44px 44px;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .headline {
+    font-family: 'Libre Baskerville', Georgia, serif;
+    font-size: 58px;
+    font-weight: 700;
+    line-height: 1.0;
+    color: #e8ede6;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+
+  .headline em {
+    font-style: italic;
+    font-weight: 400;
+    color: #7ec99a;
+  }
+
+  .sub-headline {
+    font-size: 11px;
+    color: #4e7a5c;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 36px;
+  }
+
+  .rule {
+    width: 100%;
+    height: 0.5px;
+    background: #1e3828;
+    margin: 28px 0;
+  }
+
+  .timeline { display: flex; flex-direction: column; }
+
+  .tl-row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    align-items: stretch;
+  }
+
+  .tl-time {
+    font-family: 'Libre Baskerville', Georgia, serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #7ec99a;
+    padding: 14px 20px 14px 0;
+    border-right: 0.5px solid #2a4a35;
+    text-align: right;
+    line-height: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+  }
+
+  .tl-time span {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: #4e7a5c;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 3px;
+    font-weight: 400;
+  }
+
+  .tl-content {
+    padding: 12px 0 12px 20px;
+    border-bottom: 0.5px solid #1e3828;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .tl-row:last-child .tl-content { border-bottom: none; }
+
+  .tl-top { display: flex; align-items: center; gap: 7px; }
+
+  .tl-emoji { font-size: 14px; line-height: 1; flex-shrink: 0; }
+
+  .tl-category {
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #4e7a5c;
+    white-space: nowrap;
+  }
+
+  .tl-items { display: flex; flex-wrap: nowrap; gap: 6px; }
+
+  .tl-pill {
+    font-family: 'Libre Baskerville', Georgia, serif;
+    font-size: 12px;
+    color: #c2d9c9;
+    background: #132218;
+    border: 0.5px solid #2a4a35;
+    padding: 3px 9px;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+  }
+
+  .tl-pill.accent {
+    color: #0c1a14;
+    background: #7ec99a;
+    border-color: #7ec99a;
+  }
+
+  .pill-emoji { font-size: 12px; line-height: 1; }
+
+  .principle-box {
+    background: #132218;
+    border: 0.5px solid #2a4a35;
+    border-left: 3px solid #7ec99a;
+    padding: 18px 20px;
+  }
+
+  .principle-label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #4e7a5c;
+    margin-bottom: 8px;
+  }
+
+  .principle-text {
+    font-family: 'Libre Baskerville', Georgia, serif;
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.65;
+    color: #c2d9c9;
+  }
+
+  .principle-text strong {
+    font-style: normal;
+    font-weight: 700;
+    color: #7ec99a;
+  }
+
+  .footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 28px;
+  }
+
+  .footer-text {
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    color: #2a4a35;
+    text-transform: uppercase;
+  }
+
+  .pro-tip {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    color: #7ec99a;
+    text-transform: uppercase;
+    text-align: right;
+    line-height: 1.6;
+  }
+</style>
+
+<div class="poster">
+
+  <h1 class="headline">How far out<br>is <em>far enough?</em></h1>
+  <p class="sub-headline">Lead times by category</p>
+
+  <div class="timeline">
+
+    <div class="tl-row">
+      <div class="tl-time">6–12<span>months</span></div>
+      <div class="tl-content">
+        <div class="tl-top">
+          <span class="tl-emoji">🏛️</span>
+          <p class="tl-category">Events</p>
+        </div>
+        <div class="tl-items">
+          <span class="tl-pill accent"><span class="pill-emoji">📍</span>Venues</span>
+          <span class="tl-pill">Top spots book a full year out</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-row">
+      <div class="tl-time">3–6<span>months</span></div>
+      <div class="tl-content">
+        <div class="tl-top">
+          <span class="tl-emoji">✈️</span>
+          <p class="tl-category">Travel · Events · Appointments</p>
+        </div>
+        <div class="tl-items">
+          <span class="tl-pill accent"><span class="pill-emoji">🌍</span>Intl. flights</span>
+          <span class="tl-pill"><span class="pill-emoji">🍽️</span>Vendors &amp; caterers</span>
+          <span class="tl-pill"><span class="pill-emoji">🩺</span>High-demand specialists</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-row">
+      <div class="tl-time">1–3<span>months</span></div>
+      <div class="tl-content">
+        <div class="tl-top">
+          <span class="tl-emoji">🗺️</span>
+          <p class="tl-category">Travel · Logistics</p>
+        </div>
+        <div class="tl-items">
+          <span class="tl-pill accent"><span class="pill-emoji">🛫</span>Domestic flights</span>
+          <span class="tl-pill"><span class="pill-emoji">🏨</span>Peak hotels</span>
+          <span class="tl-pill">Most personal logistics</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-row">
+      <div class="tl-time">2–4<span>weeks</span></div>
+      <div class="tl-content">
+        <div class="tl-top">
+          <span class="tl-emoji">📅</span>
+          <p class="tl-category">Appointments · Gatherings</p>
+        </div>
+        <div class="tl-items">
+          <span class="tl-pill accent"><span class="pill-emoji">🏥</span>Routine doctors</span>
+          <span class="tl-pill">Popular services</span>
+          <span class="tl-pill"><span class="pill-emoji">🥂</span>Casual events</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-row">
+      <div class="tl-time">7–10<span>days</span></div>
+      <div class="tl-content">
+        <div class="tl-top">
+          <span class="tl-emoji">🌤️</span>
+          <p class="tl-category">Weather</p>
+        </div>
+        <div class="tl-items">
+          <span class="tl-pill">Only reliable window for forecasts</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="principle-box">
+    <p class="principle-label">The governing principle</p>
+    <p class="principle-text">The <strong>harder</strong> something is to change, or the more <strong>other people depend on it,</strong> the earlier you should lock it in. Travel and events fall squarely in that category.</p>
+  </div>
+
+  <div class="footer-row">
+    <p class="footer-text">Planning Readiness · Personal Operating System</p>
+    <p class="pro-tip">Pro move: book your next<br>appointment before you leave</p>
+  </div>
+
+</div>
