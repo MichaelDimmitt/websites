@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Madrid · Lisbon · Barcelona · South of France — June/July 2025</title>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #060e09;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .poster {
+      background: #0c1a14;
+      color: #e8ede6;
+      font-family: 'IBM Plex Mono', monospace;
+      padding: 48px 44px 56px;
+      max-width: 760px;
+      width: 100%;
+    }
+
+    .chapter-tag {
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #2a4a35;
+      margin-bottom: 14px;
+    }
+
+    .headline {
+      font-family: 'Libre Baskerville', Georgia, serif;
+      font-size: 48px;
+      font-weight: 700;
+      line-height: 1.0;
+      color: #e8ede6;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .headline em {
+      font-style: italic;
+      font-weight: 400;
+      color: #7ec99a;
+    }
+
+    .route-line {
+      font-size: 11px;
+      color: #4e7a5c;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .sub-headline {
+      font-size: 11px;
+      color: #4e7a5c;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 36px;
+    }
+
+    .rule {
+      width: 100%;
+      height: 0.5px;
+      background: #1e3828;
+      margin: 28px 0;
+    }
+
+    .section-label {
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #4e7a5c;
+      margin-bottom: 16px;
+    }
+
+    /* ── Route visual ── */
+    .route-strip {
+      background: #132218;
+      border: 0.5px solid #2a4a35;
+      padding: 20px 22px;
+      margin-bottom: 12px;
+    }
+    .route-nodes {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+      flex-wrap: wrap;
+      row-gap: 16px;
+    }
+    .route-node { display: flex; align-items: flex-start; }
+    .route-city {
+      font-family: 'Libre Baskerville', Georgia, serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: #7ec99a;
+      white-space: nowrap;
+    }
+    .route-city span {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      display: block;
+      color: #4e7a5c;
+      letter-spacing: 0.1em;
+      font-weight: 400;
+      margin-top: 3px;
+    }
+    .route-city .date-tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      display: block;
+      color: #7ec99a;
+      opacity: 0.6;
+      letter-spacing: 0.06em;
+      margin-top: 2px;
+    }
+    .route-arrow {
+      color: #2a4a35;
+      font-size: 16px;
+      padding: 2px 10px 0;
+      flex-shrink: 0;
+    }
+    .route-note {
+      font-size: 10px;
+      color: #4e7a5c;
+      margin-top: 14px;
+      line-height: 1.7;
+    }
+    .route-note strong { color: #7ec99a; }
+
+    /* ── Option band ── */
+    .option-band {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #0f1e17;
+      border: 0.5px solid #2a4a35;
+      border-left: 3px solid #4e7a5c;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+    }
+    .option-label {
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #4e7a5c;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .option-text {
+      font-family: 'Libre Baskerville', Georgia, serif;
+      font-size: 12px;
+      color: #c2d9c9;
+      line-height: 1.5;
+    }
+    .option-text strong { color: #7ec99a; }
+
+    /* ── Day grid ── */
+    .day-grid { display: flex; flex-direction: column; }
+
+    .day-row {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      align-items: stretch;
+    }
+
+    .day-left {
+      padding: 14px 18px 14px 0;
+      border-right: 0.5px solid #2a4a35;
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 3px;
+    }
+    .day-label {
+      font-family: 'Libre Baskerville', Georgia, serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #7ec99a;
+      line-height: 1;
+    }
+    .day-sub {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: #4e7a5c;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .day-date {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: #4e7a5c;
+      letter-spacing: 0.06em;
+    }
+
+    .day-content {
+      padding: 12px 0 14px 20px;
+      border-bottom: 0.5px solid #1e3828;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .day-row:last-child .day-content { border-bottom: none; }
+
+    .day-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .day-emoji { font-size: 15px; line-height: 1; flex-shrink: 0; }
+    .day-city {
+      font-family: 'Libre Baskerville', Georgia, serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #e8ede6;
+    }
+    .day-transit {
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #4e7a5c;
+    }
+
+    .day-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pill {
+      font-family: 'Libre Baskerville', Georgia, serif;
+      font-size: 11px;
+      color: #c2d9c9;
+      background: #132218;
+      border: 0.5px solid #2a4a35;
+      padding: 3px 9px;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .pill.accent {
+      color: #0c1a14;
+      background: #7ec99a;
+      border-color: #7ec99a;
+      font-weight: 700;
+    }
+    .pill.warn {
+      color: #f0d87a;
+      background: #1e1a06;
+      border-color: #4a3e10;
+    }
+    .pill.alt {
+      color: #b0cff8;
+      background: #0d1620;
+      border-color: #1e3050;
+    }
+
+    .day-note {
+      font-size: 10px;
+      color: #4e7a5c;
+      line-height: 1.7;
+      max-width: 520px;
+    }
+    .day-note strong { color: #7ec99a; }
+    .day-note em { color: #f0d87a; font-style: normal; }
+
+    /* ── Booking checklist ── */
+    .book-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .book-box {
+      background: #132218;
+      border: 0.5px solid #2a4a35;
+      padding: 16px 18px;
+    }
+    .book-box-label {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #4e7a5c;
+      margin-bottom: 12px;
+    }
+    .book-items { display: flex; flex-direction: column; gap: 9px; }
+    .book-item {
+      display: grid;
+      grid-template-columns: 16px 1fr;
+      gap: 8px;
+      align-items: start;
+    }
+    .book-dot {
+      width: 5px;
+      height: 5px;
+      background: #7ec99a;
+      border-radius: 50%;
+      margin-top: 5px;
+      flex-shrink: 0;
+    }
+    .book-dot.warn { background: #d4a017; }
+    .book-dot.dim { background: #2a4a35; }
+    .book-text {
+      font-family: 'Libre Baskerville', Georgia, serif;
+      font-size: 12px;
+      color: #c2d9c9;
+      line-height: 1.5;
+    }
+    .book-text strong { color: #e8ede6; }
+    .book-text .sub {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: #4e7a5c;
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* ── Principle box ── */
+    .principle-box {
+      background: #132218;
+      border: 0.5px solid #2a4a35;
+      border-left: 3px solid #7ec99a;
+      padding: 18px 20px;
+    }
+    .principle-label {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #4e7a5c;
+      margin-bottom: 8px;
+    }
+    .principle-text {
+      font-family: 'Libre Baskerville', Georgia, serif;
+      font-style: italic;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #c2d9c9;
+    }
+    .principle-text strong {
+      font-style: normal;
+      font-weight: 700;
+      color: #7ec99a;
+    }
+
+    /* ── Open questions ── */
+    .question-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 0.5px solid #1e3828;
+    }
+    .question-row:last-child { border-bottom: none; }
+    .q-num {
+      font-family: 'Libre Baskerville', Georgia, serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #2a4a35;
+      flex-shrink: 0;
+      width: 24px;
+      padding-top: 1px;
+    }
+    .q-text {
+      font-family: 'Libre Baskerville', Georgia, serif;
+      font-size: 13px;
+      color: #c2d9c9;
+      line-height: 1.6;
+    }
+    .q-text strong { color: #e8ede6; }
+    .q-text .sub {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: #4e7a5c;
+      display: block;
+      margin-top: 3px;
+    }
+
+    .footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 32px;
+    }
+    .footer-text {
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      color: #2a4a35;
+      text-transform: uppercase;
+    }
+    .pro-tip {
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      color: #7ec99a;
+      text-transform: uppercase;
+      text-align: right;
+      line-height: 1.6;
+    }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .flag { font-size: 14px; }
+  </style>
+</head>
+<body>
+<div class="poster">
+
+  <p class="chapter-tag">Planning Readiness · Trip Dossier</p>
+  <h1 class="headline">Madrid · Lisbon<br><em>· Barcelona · South of France</em></h1>
+  <p class="route-line">JAX → Spain → Portugal → Spain → France → JAX</p>
+  <p class="sub-headline">June 26 – July 13, 2026 · 17 nights · Decision points flagged</p>
+
+  <!-- ── ROUTE OVERVIEW ── -->
+  <div class="rule"></div>
+  <p class="section-label">Your Route — As Built</p>
+
+  <div class="route-strip">
+    <div class="route-nodes">
+      <div class="route-node">
+        <div class="route-city">JAX<span>Depart</span><span class="date-tag">Fri Jun 26</span></div>
+      </div>
+      <div class="route-arrow">→</div>
+      <div class="route-node">
+        <div class="route-city">Madrid (MAD)<span>Entry point</span><span class="date-tag">Fri Jun 26 eve</span></div>
+      </div>
+      <div class="route-arrow">→</div>
+      <div class="route-node">
+        <div class="route-city">Lisbon (LIS)<span>~2 days Madrid</span><span class="date-tag">~Sun Jun 28</span></div>
+      </div>
+      <div class="route-arrow">→</div>
+      <div class="route-node">
+        <div class="route-city">Madrid (MAD)<span>Return to Madrid</span><span class="date-tag">~Thu Jul 3</span></div>
+      </div>
+      <div class="route-arrow">→</div>
+      <div class="route-node">
+        <div class="route-city">Barcelona (BCN)<span>High-speed AVE</span><span class="date-tag">Fri Jul 4</span></div>
+      </div>
+      <div class="route-arrow">→</div>
+      <div class="route-node">
+        <div class="route-city">Nice / Paris<span>Train or fly</span><span class="date-tag">~Mon Jul 7</span></div>
+      </div>
+      <div class="route-arrow">→</div>
+      <div class="route-node">
+        <div class="route-city">Madrid (MAD)<span>Return flight</span><span class="date-tag">Sun Jul 13</span></div>
+      </div>
+      <div class="route-arrow">→</div>
+      <div class="route-node">
+        <div class="route-city">JAX<span>Home</span></div>
+      </div>
+    </div>
+    <p class="route-note"><strong>Schengen note:</strong> Spain, France are Schengen. Portugal is also Schengen. Your entire trip counts as one block — one border crossing at MAD covers everything. 17 days is well within the 90-day limit. <strong>EES biometric scan</strong> happens at MAD on entry — expect a few extra minutes at the first checkpoint.</p>
+  </div>
+
+  <!-- ── ALTERNATE ENTRY ── -->
+  <div class="option-band">
+    <span class="option-label">Alt A</span>
+    <span class="option-text"><strong>Fly into Lisbon (LIS) instead of Madrid</strong> — Start in Portugal, then train or fly to Madrid, then continue as planned. This makes sense if LIS fares are cheaper from JAX, or if you want more time in Portugal. The trade-off: you add a Lisbon → Madrid segment at the start.</span>
+  </div>
+  <div class="option-band" style="margin-bottom:0;">
+    <span class="option-label">Rec</span>
+    <span class="option-text"><strong>Fly MAD in, MAD out</strong> — Cleanest routing. Return from Madrid is already your anchor. Lock that first.</span>
+  </div>
+
+  <!-- ── DAY BY DAY ── -->
+  <div class="rule"></div>
+  <p class="section-label">Day-by-Day Breakdown</p>
+
+  <div class="day-grid">
+
+    <div class="day-row">
+      <div class="day-left">
+        <div class="day-label">Day 1</div>
+        <div class="day-date">Fri Jun 26</div>
+        <div class="day-sub">Arrival</div>
+      </div>
+      <div class="day-content">
+        <div class="day-top">
+          <span class="day-emoji">✈️</span>
+          <span class="day-city">Madrid</span>
+          <span class="day-transit">JAX → MAD · Long-haul overnight</span>
+        </div>
+        <div class="day-pills">
+          <span class="pill accent">🔒 Lock this flight first</span>
+          <span class="pill">Evening arrival</span>
+          <span class="pill">Hotel near city center or Retiro</span>
+        </div>
+        <p class="day-note">Book this 3–4 months out. JAX likely routes through ATL, MIA, or JFK. Check nonstop MIA → MAD (Iberia) for comfort on the long leg. <strong>Lock return JAX before this.</strong></p>
+      </div>
+    </div>
+
+    <div class="day-row">
+      <div class="day-left">
+        <div class="day-label">Days 2–3</div>
+        <div class="day-date">Sat–Sun Jun 27–28</div>
+        <div class="day-sub">Madrid</div>
+      </div>
+      <div class="day-content">
+        <div class="day-top">
+          <span class="day-emoji">🇪🇸</span>
+          <span class="day-city">Madrid</span>
+        </div>
+        <div class="day-pills">
+          <span class="pill accent">Prado Museum</span>
+          <span class="pill">Retiro Park</span>
+          <span class="pill">Puerta del Sol</span>
+          <span class="pill warn">Book Prado timed entry ahead</span>
+        </div>
+        <p class="day-note">2 nights in Madrid before heading to Lisbon. Book Prado 2–4 weeks in advance — free Sunday evenings fill fast. Good orientation city before Portugal.</p>
+      </div>
+    </div>
+
+    <div class="day-row">
+      <div class="day-left">
+        <div class="day-label">Days 3–8</div>
+        <div class="day-date">Sun Jun 28 – Thu Jul 3</div>
+        <div class="day-sub">Lisbon · 5 nights</div>
+      </div>
+      <div class="day-content">
+        <div class="day-top">
+          <span class="day-emoji">🇵🇹</span>
+          <span class="day-city">Lisbon</span>
+          <span class="day-transit">Madrid → Lisbon · ~2.5 hrs by AVE/train or 1.5 hrs by air</span>
+        </div>
+        <div class="day-pills">
+          <span class="pill accent">MAD → LIS transport</span>
+          <span class="pill">5 nights in Lisbon</span>
+          <span class="pill">Alfama · Belém · Sintra day trip</span>
+          <span class="pill warn">Sintra books out in summer</span>
+        </div>
+        <p class="day-note">Madrid → Lisbon: there's no true high-speed rail — fastest train is ~2.5 hrs (Renfe/CP, Chamartín to Santa Apolónia). A <strong>budget flight is often faster and cheaper</strong> (Ryanair/Vueling, ~1hr, often €30–60). Decide and book 6–8 weeks out. <strong>5 nights is a great allocation for Lisbon</strong> — enough for a Sintra day trip. Book Sintra transport or tours 3–4 weeks out; it gets crowded in July.</p>
+      </div>
+    </div>
+
+    <div class="day-row">
+      <div class="day-left">
+        <div class="day-label">Day 8</div>
+        <div class="day-date">Thu Jul 3</div>
+        <div class="day-sub">Transit day</div>
+      </div>
+      <div class="day-content">
+        <div class="day-top">
+          <span class="day-emoji">🚄</span>
+          <span class="day-city">Lisbon → Madrid → Barcelona</span>
+          <span class="day-transit">Long transit day</span>
+        </div>
+        <div class="day-pills">
+          <span class="pill warn">⚠ Long day — plan carefully</span>
+          <span class="pill">LIS → MAD (fly, ~1.5 hrs)</span>
+          <span class="pill">MAD → BCN (AVE, ~2h30m)</span>
+          <span class="pill alt">OR: LIS → BCN direct flight (~2 hrs)</span>
+        </div>
+        <p class="day-note"><em>Decision point:</em> Do you route through Madrid or fly Lisbon → Barcelona direct? A <strong>direct LIS → BCN flight</strong> (Vueling, TAP) is often available and skips the Madrid connection entirely — this is probably the smarter move. If you want one more Madrid night, train MAD → BCN next morning instead. <strong>Book this 6–8 weeks out</strong> — July 3 is a peak summer travel day.</p>
+      </div>
+    </div>
+
+    <div class="day-row">
+      <div class="day-left">
+        <div class="day-label">Days 8–11</div>
+        <div class="day-date">Thu Jul 3 – Sun Jul 6</div>
+        <div class="day-sub">Barcelona · 3–4 nights</div>
+      </div>
+      <div class="day-content">
+        <div class="day-top">
+          <span class="day-emoji">🇪🇸</span>
+          <span class="day-city">Barcelona</span>
+        </div>
+        <div class="day-pills">
+          <span class="pill accent">Sagrada Família — book NOW</span>
+          <span class="pill">Park Güell timed entry</span>
+          <span class="pill">Gothic Quarter</span>
+          <span class="pill warn">Peak July — hotel ASAP</span>
+        </div>
+        <p class="day-note"><strong>Sagrada Família sells out weeks in advance in July.</strong> Book the moment your dates are confirmed — do not wait. Park Güell timed entry also needed. Hotels in Barcelona peak July: book 2–4 months out. Stay in Eixample or near Gràcia for walkability.</p>
+      </div>
+    </div>
+
+    <div class="day-row">
+      <div class="day-left">
+        <div class="day-label">Days 11–13</div>
+        <div class="day-date">Sun Jul 6 – Tue Jul 8</div>
+        <div class="day-sub">France · 2–3 nights</div>
+      </div>
+      <div class="day-content">
+        <div class="day-top">
+          <span class="day-emoji">🇫🇷</span>
+          <span class="day-city">Nice or Paris</span>
+          <span class="day-transit">Train or fly from Barcelona</span>
+        </div>
+        <div class="day-pills">
+          <span class="pill accent alt">BCN → Nice: TGV ~5.5 hrs</span>
+          <span class="pill alt">BCN → Paris: TGV ~6.5 hrs or fly ~2 hrs</span>
+          <span class="pill">Nice: Côte d'Azur · Riviera · Monaco day trip</span>
+          <span class="pill">Paris: Versailles · Eiffel · Musée d'Orsay</span>
+          <span class="pill warn">Paris in July = book 3–4 months out</span>
+        </div>
+        <p class="day-note"><em>Decision point — Nice vs Paris:</em> <strong>Nice</strong> is the easier, slower choice — beach, coast, Monaco day trip, more relaxed pace. <strong>Paris</strong> is denser and requires more advance booking. With only 2–3 nights, Nice may deliver more with less friction. Barcelona → Nice by TGV is scenic and bookable via Rail Europe or SNCF. <strong>Book train 6–8 weeks out</strong> — TGV seats at good prices go fast.</p>
+      </div>
+    </div>
+
+    <div class="day-row">
+      <div class="day-left">
+        <div class="day-label">Days 13–17</div>
+        <div class="day-date">Tue Jul 8 – Sat Jul 12</div>
+        <div class="day-sub">Madrid · 4–5 nights</div>
+      </div>
+      <div class="day-content">
+        <div class="day-top">
+          <span class="day-emoji">🇪🇸</span>
+          <span class="day-city">Madrid</span>
+          <span class="day-transit">Nice / Paris → MAD · Flight or TGV</span>
+        </div>
+        <div class="day-pills">
+          <span class="pill accent">Return anchor city</span>
+          <span class="pill">Nice → MAD: ~2 hrs fly</span>
+          <span class="pill">Paris → MAD: ~2 hrs fly</span>
+          <span class="pill">Final nights before departure</span>
+        </div>
+        <p class="day-note">Madrid is your return hub — gives you a clean depart on Sunday Jul 13. <strong>4–5 Madrid nights on the back end</strong> is generous; consider trimming to 2–3 if you want more time in France. Book the France → MAD return flight when you book the MAD → JAX. Hotel near Barajas airport neighborhood for last night is optional but reduces Sunday morning friction.</p>
+      </div>
+    </div>
+
+    <div class="day-row">
+      <div class="day-left">
+        <div class="day-label">Day 18</div>
+        <div class="day-date">Sun Jul 13</div>
+        <div class="day-sub">Departure</div>
+      </div>
+      <div class="day-content">
+        <div class="day-top">
+          <span class="day-emoji">✈️</span>
+          <span class="day-city">MAD → JAX</span>
+          <span class="day-transit">Return flight home</span>
+        </div>
+        <div class="day-pills">
+          <span class="pill accent">🔒 Lock this FIRST — before anything else</span>
+          <span class="pill">Global Entry kiosk on return to US</span>
+          <span class="pill">Add KTN to flight booking</span>
+        </div>
+        <p class="day-note">This is your skeleton anchor. <strong>Book the MAD → JAX return immediately</strong>, even before you confirm inbound flights. Locks the trip shape, prevents last-minute one-way prices, and gives you a hard deadline to plan backwards from.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── BOOKING SEQUENCE ── -->
+  <div class="rule"></div>
+  <p class="section-label">Booking Order — Lock This Sequence</p>
+
+  <div class="book-grid">
+    <div class="book-box">
+      <p class="book-box-label">🔒 Book Immediately (Now → 2 weeks)</p>
+      <div class="book-items">
+        <div class="book-item">
+          <div class="book-dot"></div>
+          <span class="book-text"><strong>MAD → JAX return flight · Jul 13</strong><span class="sub">Your anchor. Everything builds from this.</span></span>
+        </div>
+        <div class="book-item">
+          <div class="book-dot"></div>
+          <span class="book-text"><strong>JAX → MAD inbound · Jun 26</strong><span class="sub">Book together with return for best fare pairing.</span></span>
+        </div>
+        <div class="book-item">
+          <div class="book-dot"></div>
+          <span class="book-text"><strong>Sagrada Família, Barcelona</strong><span class="sub">Books out weeks early in July. Do not delay.</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="book-box">
+      <p class="book-box-label">📅 Book Within 4–8 Weeks</p>
+      <div class="book-items">
+        <div class="book-item">
+          <div class="book-dot"></div>
+          <span class="book-text"><strong>Barcelona hotel (Jul 3–6)</strong><span class="sub">Peak July — book 2–3 months out min.</span></span>
+        </div>
+        <div class="book-item">
+          <div class="book-dot"></div>
+          <span class="book-text"><strong>Lisbon hotel (Jun 28 – Jul 3)</strong><span class="sub">5 nights. Book 6–8 weeks out.</span></span>
+        </div>
+        <div class="book-item">
+          <div class="book-dot"></div>
+          <span class="book-text"><strong>Madrid hotels (Jun 26–28 + Jul 8–12)</strong><span class="sub">Easier availability but don't leave last minute.</span></span>
+        </div>
+        <div class="book-item">
+          <div class="book-dot"></div>
+          <span class="book-text"><strong>Park Güell timed entry</strong><span class="sub">Books out quickly in summer.</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="book-box">
+      <p class="book-box-label">🚄 Book 4–8 Weeks Out — Transit</p>
+      <div class="book-items">
+        <div class="book-item">
+          <div class="book-dot"></div>
+          <span class="book-text"><strong>MAD → LIS or LIS direct · Jun 28</strong><span class="sub">Flight (Ryanair/Vueling, ~€30–60) or Renfe train ~2.5 hrs</span></span>
+        </div>
+        <div class="book-item">
+          <div class="book-dot"></div>
+          <span class="book-text"><strong>LIS → BCN or LIS → MAD → BCN · Jul 3</strong><span class="sub">Direct LIS→BCN flight recommended. Peak summer day.</span></span>
+        </div>
+        <div class="book-item">
+          <div class="book-dot"></div>
+          <span class="book-text"><strong>BCN → Nice or BCN → Paris · Jul 6–7</strong><span class="sub">TGV via Rail Europe or SNCF. Prices rise fast.</span></span>
+        </div>
+        <div class="book-item">
+          <div class="book-dot"></div>
+          <span class="book-text"><strong>Nice/Paris → MAD · ~Jul 8</strong><span class="sub">Budget flight ~€50–100. Easy 2-hour hop.</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="book-box">
+      <p class="book-box-label warn" style="color:#8a6a10;">⚠ Watchlist & Decisions Pending</p>
+      <div class="book-items">
+        <div class="book-item">
+          <div class="book-dot warn"></div>
+          <span class="book-text"><strong>Nice vs. Paris — decide soon</strong><span class="sub">Affects train booking, hotel, and France → MAD flight.</span></span>
+        </div>
+        <div class="book-item">
+          <div class="book-dot warn"></div>
+          <span class="book-text"><strong>Fly into MAD vs. LIS — confirm</strong><span class="sub">Affects first hotel and Day 1 routing.</span></span>
+        </div>
+        <div class="book-item">
+          <div class="book-dot warn"></div>
+          <span class="book-text"><strong>ETIAS authorization</strong><span class="sub">Launches late 2026 — may affect this trip. Check etias.europa.eu.</span></span>
+        </div>
+        <div class="book-item">
+          <div class="book-dot dim"></div>
+          <span class="book-text"><strong>Travel insurance</strong><span class="sub">Book 2–4 weeks out. Cover medical + trip cancellation.</span></span>
+        </div>
+        <div class="book-item">
+          <div class="book-dot dim"></div>
+          <span class="book-text"><strong>Notify bank of travel dates</strong><span class="sub">1–2 weeks before departure.</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── OPEN QUESTIONS ── -->
+  <div class="rule"></div>
+  <p class="section-label">Decisions Still Open</p>
+
+  <div class="question-row">
+    <div class="q-num">1</div>
+    <div class="q-text"><strong>Nice or Paris?</strong> With only 2–3 nights, Nice is the lower-friction choice — beach, coast, Monaco day trip. Paris needs more time to feel worth it. If you've done Paris before, Nice is the move.
+      <span class="sub">→ Affects: BCN → France train booking, hotel, and France → MAD flight home.</span></div>
+  </div>
+
+  <div class="question-row">
+    <div class="q-num">2</div>
+    <div class="q-text"><strong>Fly into MAD or LIS?</strong> MAD is cleaner — it's your return city too. LIS entry only makes sense if the fare is significantly cheaper from JAX or if you want more Portugal time upfront.
+      <span class="sub">→ Affects: Day 1 hotel, Madrid time allocation, and total Portugal days.</span></div>
+  </div>
+
+  <div class="question-row">
+    <div class="q-num">3</div>
+    <div class="q-text"><strong>LIS → BCN direct or route through Madrid?</strong> Direct LIS → BCN saves a connection and gets you to Barcelona faster. Routing through Madrid adds a Madrid night but also adds 4+ hours of transit.
+      <span class="sub">→ Affects: Jul 3 transit day complexity and Madrid night count.</span></div>
+  </div>
+
+  <div class="question-row">
+    <div class="q-num">4</div>
+    <div class="q-text"><strong>How to split the 4–5 Madrid nights on the back end?</strong> That's a lot of Madrid time post-France. Could trim to 2 nights and give the days back to France or Barcelona.
+      <span class="sub">→ Affects: France → MAD flight date and total France time.</span></div>
+  </div>
+
+  <!-- ── PRINCIPLE ── -->
+  <div class="rule"></div>
+  <div class="principle-box">
+    <p class="principle-label">The rolling horizon rule — applied to this trip</p>
+    <p class="principle-text">Lock the <strong>return first</strong>. That single flight — MAD to JAX on July 13 — is your skeleton. Every other booking is downstream of it. The moment you have that confirmation, work backwards: lock inbound, then hotels in booking order, then Sagrada Família before you do anything else. The decisions still open (Nice vs. Paris, entry city) don't block any of those first moves.</p>
+  </div>
+
+  <div class="footer-row">
+    <p class="footer-text">Planning Readiness · Personal Operating System</p>
+    <p class="pro-tip">Lock MAD→JAX Jul 13.<br>Book Sagrada Família immediately after.</p>
+  </div>
+
+</div>
+</body>
+</html>
