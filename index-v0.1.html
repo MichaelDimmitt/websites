@@ -21,53 +21,8 @@
       border-bottom: 1px solid #1e3028;
       padding: 24px 40px;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .header-left {
-      display: flex;
       align-items: baseline;
       gap: 16px;
-    }
-
-    .hub-version-wrapper {
-      position: relative;
-      display: inline-block;
-    }
-
-    .hub-version-wrapper::after {
-      content: '▼';
-      position: absolute;
-      right: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 0.45rem;
-      color: #2e5a40;
-      pointer-events: none;
-    }
-
-    .hub-version-select {
-      appearance: none;
-      background: #0c1a14;
-      border: 1px solid #1e3028;
-      border-radius: 3px;
-      padding: 5px 24px 5px 10px;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6rem;
-      color: #4a7a5a;
-      cursor: pointer;
-      outline: none;
-      transition: border-color 0.2s;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .hub-version-select:hover,
-    .hub-version-select:focus {
-      border-color: #3d7a55;
-      color: #7aaa8a;
     }
 
     .logo-text {
@@ -210,13 +165,8 @@
 </head>
 <body>
   <header>
-    <div class="header-left">
-      <span class="logo-text">Personal Tools</span>
-      <span class="logo-badge">Hub</span>
-    </div>
-    <div class="hub-version-wrapper">
-      <select class="hub-version-select" id="hub-version" title="Switch hub version"></select>
-    </div>
+    <span class="logo-text">Personal Tools</span>
+    <span class="logo-badge">Hub</span>
   </header>
 
   <main>
@@ -293,35 +243,5 @@
   <footer>
     <p class="footer-text">Personal Tools &mdash; Local Hub</p>
   </footer>
-
-  <script>
-    async function loadHubVersions() {
-      try {
-        const response = await fetch('/releases.json');
-        const data = await response.json();
-        const select = document.getElementById('hub-version');
-        const currentFile = window.location.pathname.split('/').pop() || 'index.html';
-
-        data.releases.forEach((release, index) => {
-          const option = document.createElement('option');
-          option.value = '/' + release.file;
-          option.textContent = release.version + (index === 0 ? ' (latest)' : '');
-          if (currentFile === release.file || (index === 0 && currentFile === 'index.html')) {
-            option.selected = true;
-          }
-          select.appendChild(option);
-        });
-
-        select.addEventListener('change', () => {
-          if (select.value) window.location.href = select.value;
-        });
-      } catch (e) {
-        const wrapper = document.getElementById('hub-version').closest('.hub-version-wrapper');
-        if (wrapper) wrapper.style.display = 'none';
-      }
-    }
-
-    loadHubVersions();
-  </script>
 </body>
 </html>

@@ -4,7 +4,12 @@
 websites/
 │
 ├── Architecture.md                    ← This file
-├── index.html                         ← Top-level hub: links to all subfolder index pages
+├── CLAUDE.md                          ← Project instructions and versioning workflow
+├── releases.json                      ← Hub page version metadata (drives header version dropdown)
+├── index.html                         ← Top-level hub: always the live version (copy of latest)
+├── index-master.html                  ← Master index: always latest; git log -p shows full diff history
+├── index-v0.1.html                    ← v0.1: initial hub page with tool cards
+├── index-v0.2.html                    ← v0.2: version selector in header for hub page itself
 ├── CORS                               ← CORS config / notes (root-level)
 ├── chat-conversation.md               ← Misc conversation notes
 │
@@ -74,3 +79,22 @@ All `href` values in hub pages use **absolute paths from the serve root** (e.g. 
 npx serve .
 # Visit http://localhost:3000
 ```
+
+## Hub Page Versioning
+
+`index.html` is versioned using a snapshot pattern. The header contains a version dropdown driven by `releases.json`.
+
+| File | Purpose |
+|------|---------|
+| `index.html` | Always the live version — copy of the latest snapshot |
+| `index-master.html` | Master index; `git log -p index-master.html` is the full diff log |
+| `index-vX.Y.html` | Immutable snapshots; never overwritten |
+| `releases.json` | Version metadata; drives the header dropdown |
+
+**To inspect what changed between versions:**
+
+```bash
+git log -p index-master.html
+```
+
+**Workflow when changing `index.html`:** see `CLAUDE.md` for the full 4-step process.
