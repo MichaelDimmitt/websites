@@ -1,0 +1,19 @@
+{
+  "tool": "Hub Page",
+  "releases": [
+    {
+      "version": "v0.2",
+      "file": "index-v0.2.html",
+      "date": "2026-05-01",
+      "description": "v0.2 — version selector in header so you can navigate to older hub versions",
+      "cheeky": false
+    },
+    {
+      "version": "v0.1",
+      "file": "index-v0.1.html",
+      "date": "2026-05-01",
+      "description": "v0.1 — initial hub page with tool cards",
+      "cheeky": false
+    }
+  ]
+}
